@@ -138,7 +138,7 @@ function Review() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography variant="h3">Review a movie</Typography>
+        <Typography variant="h3">Review a Restaurant</Typography>
       </Grid>
       <Grid item xs={12}>
         <MovieSelection
