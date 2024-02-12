@@ -11,7 +11,7 @@ function MovieSelection({ movies, selectedMovie, handleMovieChange }) {
 
   return (
     <FormControl fullWidth>
-      <InputLabel id="movie-select-label">Select a movie</InputLabel>
+      <InputLabel id="movie-select-label">Select a Restaurant</InputLabel>
       <Select
         value={selectedMovie ? selectedMovie.id : ''}
         onChange={handleMovieSelect}
