@@ -17,6 +17,11 @@
     "yarn": "^1.22.19"
   },
   "devDependencies": {
-    "concurrently": "^8.0.1"
+    "concurrently": "^8.0.1",
+    "cypress": "^9.6.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-cypress": "2.12.1",
+    "eslint-plugin-prettier": "4.0.0",
+    "prettier": "2.6.2"
   }
 }
