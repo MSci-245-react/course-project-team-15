@@ -13,7 +13,7 @@ function RestaurantPage() {
   });
   
   useEffect(() => {
-    // Need to fetch the restaurant details from data source using the `id`
+    // Will need to fetch the restaurant details from data source using the `id`
     const fetchedRestaurantDetails = {
       name: "Restaurant Name",
       cuisine: "Italian",

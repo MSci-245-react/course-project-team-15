@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Feed() {
+function FeedPage() {
   return (
     <div>
       <h1>Feed</h1>
@@ -9,4 +9,4 @@ function Feed() {
   );
 }
 
-export default Feed;
+export default FeedPage;

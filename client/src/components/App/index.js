@@ -8,6 +8,10 @@ import Recommendations from './Recommendations';
 import ProfilePage from './ProfilePage';
 import Review from './Review';
 import RestaurantPage from './RestaurantPage';
+import ReviewsList from './ReviewsList';
+import BeenToList from './BeenToList';
+import WantToTryList from './WantToTryList';
+import FavouritesList from './FavouritesList';
 
 function App() {
   return (
@@ -31,6 +35,10 @@ function App() {
           <Route path="/ProfilePage" element={<ProfilePage />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
           <Route path="/review" element={<Review />} />
+          <Route path="/ReviewsList" element={<ReviewsList />} />
+          <Route path="/BeenToList" element={<BeenToList />} />
+          <Route path="/WantToTryList" element={<WantToTryList />} />
+          <Route path="/FavouritesList" element={<FavouritesList />} />
         </Routes>
       </Container>
     </Router>

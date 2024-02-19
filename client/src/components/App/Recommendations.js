@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Recommendation() {
+function Recommendations() {
   return (
     <div>
       <h1>Recommendations</h1>
@@ -9,4 +9,4 @@ function Recommendation() {
   );
 }
 
-export default Recommendation;
+export default Recommendations;
