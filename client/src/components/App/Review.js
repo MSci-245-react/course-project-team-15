@@ -146,7 +146,7 @@ function Review() {
           selectedMovie={selectedMovie}
           handleMovieChange={handleMovieChange}
         />
-        {errors.selectedMovie && <Typography color="red">Select your movie</Typography>}
+        {errors.selectedMovie && <Typography color="red">Select your restaurant</Typography>}
       </Grid>
       <Grid item xs={12}>
         <ReviewTitle enteredTitle={enteredTitle} handleTitleChange={handleTitleChange} />
