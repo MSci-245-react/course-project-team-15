@@ -22,8 +22,8 @@ function ReviewsList() {
     console.log(`Edit review ${restaurantId}`);
   };
 
-  const handleDelateReview = (restaurantId) => {
-    console.log(`Delate review ${restaurantId}`);
+  const handleDeleteReview = (restaurantId) => {
+    console.log(`Delete review ${restaurantId}`);
   };
 
   return (
@@ -42,7 +42,7 @@ function ReviewsList() {
                   — {review.review}
                   <Rating name="read-only" value={review.rating} readOnly />
                   <Button onClick={() => handleEditReview(index)}>Edit</Button>
-                  <Button onClick={() => handleDelateReview(index)}>Delate</Button>
+                  <Button onClick={() => handleDeleteReview(index)}>Delete</Button>
                 </>
               }
             />

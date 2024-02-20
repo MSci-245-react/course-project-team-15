@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Container, Typography, Button, Box, Grid, Avatar, Paper, List, ListItem, ListItemText} from '@mui/material';
+import { Container, Typography, Button, Box, Grid, Avatar, Paper} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function ProfilePage() {
   const userName = "User's Name";
   const userBio = "A brief bio about the user.";
   const reviewsCount = 2;
-  const friendsCount = 0;
+  const friendsCount = 2;
+  const vistedCount = 0;
+  const shortlistedCount = 0;
+  const favouritesCount = 0;
 
   const navigate = useNavigate();
 
@@ -25,8 +28,12 @@ function ProfilePage() {
       </Box>
 
       <Paper elevation={3} sx={{ mt: 2, p: 2 }}>
-        <Typography># of Reviews: {reviewsCount}</Typography>
-        <Typography># of Friends: {friendsCount}</Typography>
+        <Typography>Reviews: {reviewsCount}</Typography>
+        <Typography>Visited: {vistedCount}</Typography>
+        <Typography>Shortlisted: {shortlistedCount}</Typography>
+        <Typography>Favourited: {favouritesCount}</Typography>
+        <Typography>Friends: {friendsCount}</Typography>
+        
       </Paper>
 
       {/* All Lists */}
@@ -34,6 +41,7 @@ function ProfilePage() {
       <Button onClick={() => navigate('/BeenToList')}>Been</Button>
       <Button onClick={() => navigate('/WantToTryList')}>Want To Try</Button>
       <Button onClick={() => navigate('/FavouritesList')}>Favourites</Button>
+      <Button onClick={() => navigate('/friends')}>My Friends</Button>
     </Container>
   );
 }

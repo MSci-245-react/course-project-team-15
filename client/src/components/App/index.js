@@ -12,6 +12,7 @@ import ReviewsList from './ReviewsList';
 import BeenToList from './BeenToList';
 import WantToTryList from './WantToTryList';
 import FavouritesList from './FavouritesList';
+import Friends from './Friends';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/BeenToList" element={<BeenToList />} />
           <Route path="/WantToTryList" element={<WantToTryList />} />
           <Route path="/FavouritesList" element={<FavouritesList />} />
+          <Route path="/Friends" element={<Friends />} />
         </Routes>
       </Container>
     </Router>

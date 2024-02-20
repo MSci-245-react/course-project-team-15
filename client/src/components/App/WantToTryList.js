@@ -17,8 +17,8 @@ function WantToTryList() {
     },
   ]);
 
-  const handleDelate = (restaurantId) => {
-    console.log(`Delate review ${restaurantId}`);
+  const handleDelete = (restaurantId) => {
+    console.log(`Delete review ${restaurantId}`);
   };
 
   return (
@@ -28,7 +28,7 @@ function WantToTryList() {
         {beenToRestaurants.map((restaurant) => (
           <ListItem key={restaurant.id} divider>
             <ListItemText primary={restaurant.name} secondary={restaurant.address} />
-            <Button onClick={() => handleDelate(restaurant.id)}>Delate</Button>
+            <Button onClick={() => handleDelete(restaurant.id)}>Delete</Button>
           </ListItem>
         ))}
       </List>
