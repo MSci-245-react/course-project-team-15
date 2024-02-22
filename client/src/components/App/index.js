@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate} from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
 
 import HomePage from './HomePage';
@@ -13,8 +13,16 @@ import BeenToList from './BeenToList';
 import WantToTryList from './WantToTryList';
 import FavouritesList from './FavouritesList';
 import Friends from './Friends';
+import Survey from './Survey';
+
 
 function App() {
+  const [surveyCompleted, setSurveyCompleted] = useState(false);
+
+  const handleSurveyComplete = () => {
+    setSurveyCompleted(true);
+  };
+
   return (
     <Router>
       <AppBar position="static">
@@ -30,17 +38,18 @@ function App() {
 
       <Container>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/FeedPage" element={<FeedPage />} />
-          <Route path="/Recommendations" element={<Recommendations />} />
-          <Route path="/ProfilePage" element={<ProfilePage />} />
-          <Route path="/restaurant/:id" element={<RestaurantPage />} />
-          <Route path="/review" element={<Review />} />
-          <Route path="/ReviewsList" element={<ReviewsList />} />
-          <Route path="/BeenToList" element={<BeenToList />} />
-          <Route path="/WantToTryList" element={<WantToTryList />} />
-          <Route path="/FavouritesList" element={<FavouritesList />} />
-          <Route path="/Friends" element={<Friends />} />
+        <Route path="/survey" element={<Survey onSurveyComplete={handleSurveyComplete} />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/FeedPage" element={<FeedPage />} />
+        <Route path="/Recommendations" element={<Recommendations />} />
+        <Route path="/ProfilePage" element={<ProfilePage />} />
+        <Route path="/restaurant/:id" element={<RestaurantPage />} />
+        <Route path="/review" element={<Review />} />
+        <Route path="/ReviewsList" element={<ReviewsList />} />
+        <Route path="/BeenToList" element={<BeenToList />} />
+        <Route path="/WantToTryList" element={<WantToTryList />} />
+        <Route path="/FavouritesList" element={<FavouritesList />} />
+        <Route path="/Friends" element={<Friends />} />
         </Routes>
       </Container>
     </Router>
