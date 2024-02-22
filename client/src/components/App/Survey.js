@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography,TextField, Button, Slider, FormControl, InputLabel, Select, MenuItem, FormLabel} from '@mui/material';
+import { Container, Typography,TextField, Button, Slider, FormControl, InputLabel, Select, MenuItem, FormLabel, FormHelperText} from '@mui/material';
 
 function Survey() {
     const serverURL = "http://localhost:3000";
@@ -13,23 +13,26 @@ function Survey() {
     const [healthImportance, setHealthImportance] = useState(3);
     const [allergies, setAllergies] = useState('');
 
+    const [errors, setErrors] = useState({});
+
     const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const surveyData = {
-            cuisinePreferences,
-            dietaryRestrictions,
-            mealPreferences,
-            budget,
-            ambiancePreference,
-            diningFrequency,
-            healthImportance,
-            allergies,
-        };
-
-        await callApiAddSurvey(surveyData);
-        navigate('/');
+        if (validateForm()) {
+            const surveyData = {
+                cuisinePreferences,
+                dietaryRestrictions,
+                mealPreferences,
+                budget,
+                ambiancePreference,
+                diningFrequency,
+                healthImportance,
+                allergies,
+            };
+            await callApiAddSurvey(surveyData);
+            navigate('/');
+        }
     };
 
     const callApiAddSurvey = async (surveyData) => {
@@ -55,6 +58,44 @@ function Survey() {
         }
     };
 
+    const validateForm = () => {
+        let valid = true;
+        const errors = {};
+
+        if (cuisinePreferences.length === 0) {
+            errors.cuisinePreferences = 'Please select at least one cuisine';
+            valid = false;
+        }
+
+        if (dietaryRestrictions.length == 0) {
+            errors.dietaryRestrictions = 'Please select any dietary restrictions';
+            valid = false;
+        }
+
+        if (mealPreferences.length == 0) {
+            errors.mealPreferences = 'Please select a meal preference';
+            valid = false;
+        }
+
+        if (ambiancePreference.length == 0) {
+            errors.ambiancePreference = 'Please select a ambiance preference';
+            valid = false;
+        }
+
+        if (diningFrequency.length == 0) {
+            errors.diningFrequency = 'Please select a dining frequency';
+            valid = false;
+        }
+
+        if (allergies.length == 0) {
+            errors.allergies = 'Please write any allergies or if not write none ';
+            valid = false;
+        }
+
+        setErrors(errors);
+        return valid;
+    };
+
     return (
         <Container maxWidth="sm">
         <Typography variant="h4" gutterBottom>User Survey</Typography>
@@ -62,89 +103,117 @@ function Survey() {
             
             {/* Cuisine Preferences */}
             <FormControl fullWidth margin="normal">
-            <InputLabel>Cuisine</InputLabel>
-            <Select value={cuisinePreferences} label="Cuisine" onChange={(e) => setCuisinePreferences(e.target.value)}>
-                <MenuItem value="Italian">Italian</MenuItem>
-                <MenuItem value="Mexican">Mexican</MenuItem>
-            </Select>
+                <InputLabel>Cuisine</InputLabel>
+                <Select 
+                    value={cuisinePreferences} 
+                    label="Cuisine" 
+                    onChange={(e) => setCuisinePreferences(e.target.value)}
+                    error={!!errors.cuisinePreferences}>
+                        <MenuItem value="Italian">Italian</MenuItem>
+                        <MenuItem value="Mexican">Mexican</MenuItem>
+                </Select>
+                <FormHelperText error>{errors.cuisinePreferences}</FormHelperText>
             </FormControl>
 
             {/* Dietary Restrictions */}
             <FormControl fullWidth margin="normal">
-            <InputLabel>Dietary</InputLabel>
-            <Select value={dietaryRestrictions} label="Dietary" onChange={(e) => setDietaryRestrictions(e.target.value)}>
-                <MenuItem value="Vegan">Vegan</MenuItem>
-                <MenuItem value="Vegetarian">Vegetarian</MenuItem>
-            </Select>
+                <InputLabel>Dietary</InputLabel>
+                <Select 
+                    value={dietaryRestrictions} 
+                    label="Dietary" 
+                    onChange={(e) => setDietaryRestrictions(e.target.value)}
+                    error={!!errors.dietaryRestrictions}>
+                        <MenuItem value="Vegan">Vegan</MenuItem>
+                        <MenuItem value="Vegetarian">Vegetarian</MenuItem>
+                        <MenuItem value="None">None</MenuItem>
+                </Select>
+                <FormHelperText error>{errors.dietaryRestrictions}</FormHelperText>
             </FormControl>
 
             {/* Meal Preferences */}
             <FormControl fullWidth margin="normal">
-            <InputLabel>Meal Preferences</InputLabel>
-            <Select value={mealPreferences} label="Meal Preferences" onChange={(e) => setMealPreferences(e.target.value)}>
-                <MenuItem value="Breakfast">Breakfast</MenuItem>
-                <MenuItem value="Lunch">Lunch</MenuItem>
-                <MenuItem value="Dinner">Dinner</MenuItem>
-            </Select>
+                <InputLabel>Meal Preferences</InputLabel>
+                <Select 
+                    value={mealPreferences} 
+                    label="Meal Preferences" 
+                    onChange={(e) => setMealPreferences(e.target.value)}
+                    error={!!errors.mealPreferences}>
+                        <MenuItem value="Breakfast">Breakfast</MenuItem>
+                        <MenuItem value="Lunch">Lunch</MenuItem>
+                        <MenuItem value="Dinner">Dinner</MenuItem>
+                </Select>
+                <FormHelperText error>{errors.mealPreferences}</FormHelperText>
             </FormControl>
 
             {/* Budget */} 
             <FormControl fullWidth margin="normal">
-            <FormLabel>Budget Per Meal</FormLabel>
-            <Slider
-                value={budget}
-                onChange={(e, newValue) => setBudget(newValue)}
-                aria-labelledby="budget-slider"
-                valueLabelDisplay="auto"
-                step={1}
-                marks
-                min={1}
-                max={4}
-                valueLabelFormat={(value) => ["$", "$$", "$$$", "$$$$"][value - 1]}
-            />
-            </FormControl>
+                <FormLabel>Budget Per Meal</FormLabel>
+                <Slider
+                    value={budget}
+                    onChange={(e, newValue) => setBudget(newValue)}
+                    aria-labelledby="budget-slider"
+                    valueLabelDisplay="auto"
+                    step={1}
+                    marks
+                    min={1}
+                    max={4}
+                    valueLabelFormat={(value) => ["$", "$$", "$$$", "$$$$"][value - 1]}
+                />
+                </FormControl>
 
             {/* Ambiance Preference */}
             <FormControl fullWidth margin="normal">
-            <InputLabel>Ambiance Preferences</InputLabel>
-            <Select value={ambiancePreference} label="Ambiance Preferences" onChange={(e) => setAmbiancePreference(e.target.value)}>
-                <MenuItem value="Fine Dining">Fine Dining</MenuItem>
-                <MenuItem value="Cafe">Cafe</MenuItem>
-                <MenuItem value="Fast Food">Fast Food</MenuItem>
-            </Select>
+                <InputLabel>Ambiance Preferences</InputLabel>
+                <Select 
+                    value={ambiancePreference} 
+                    label="Ambiance Preferences" 
+                    onChange={(e) => setAmbiancePreference(e.target.value)}
+                    error={!!errors.ambiancePreference}>
+                        <MenuItem value="Fine Dining">Fine Dining</MenuItem>
+                        <MenuItem value="Cafe">Cafe</MenuItem>
+                        <MenuItem value="Fast Food">Fast Food</MenuItem>
+                </Select>
+                <FormHelperText error>{errors.ambiancePreference}</FormHelperText>
             </FormControl> 
 
             {/* Dining Frequency */} 
             <FormControl fullWidth margin="normal">
-            <InputLabel>Dining Frequency</InputLabel>
-            <Select value={diningFrequency} label="Dining Frequency" onChange={(e) => setDiningFrequency(e.target.value)}>
-                <MenuItem value="Daily">Daily</MenuItem>
-                <MenuItem value="Once a week">Once a week</MenuItem>
-                <MenuItem value="Few times a month">Few times a month</MenuItem>
-            </Select>
+                <InputLabel>Dining Frequency</InputLabel>
+                <Select 
+                    value={diningFrequency} 
+                    label="Dining Frequency" 
+                    onChange={(e) => setDiningFrequency(e.target.value)}
+                    error={!!errors.diningFrequency}>
+                        <MenuItem value="Daily">Daily</MenuItem>
+                        <MenuItem value="Once a week">Once a week</MenuItem>
+                        <MenuItem value="Few times a month">Few times a month</MenuItem>
+                </Select>
+                <FormHelperText error>{errors.diningFrequency}</FormHelperText>
             </FormControl> 
 
             {/* Health and Nutrition */}
             <Typography gutterBottom>Health and Nutrition Importance</Typography>
             <Slider
-            value={healthImportance}
-            onChange={(e, newValue) => setHealthImportance(newValue)}
-            aria-labelledby="health-importance-slider"
-            valueLabelDisplay="auto"
-            step={1}
-            marks
-            min={1}
-            max={5}
+                value={healthImportance}
+                onChange={(e, newValue) => setHealthImportance(newValue)}
+                aria-labelledby="health-importance-slider"
+                valueLabelDisplay="auto"
+                step={1}
+                marks
+                min={1}
+                max={5}
             />
 
             {/* Allergies */}
             <TextField
-            fullWidth
-            label="Allergies"
-            margin="normal"
-            value={allergies}
-            onChange={(e) => setAllergies(e.target.value)}
+                fullWidth
+                label="Allergies"
+                margin="normal"
+                value={allergies}
+                onChange={(e) => setAllergies(e.target.value)}
+                error={!!errors.allergies}
             />
+            <FormHelperText error>{errors.allergies}</FormHelperText>
         
             <Button type="submit" variant="contained" color="primary">Submit</Button>
         </form>
