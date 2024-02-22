@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Typography,TextField, Button, Slider, FormControl, InputLabel, Select, MenuItem, FormLabel} from '@mui/material';
 
 function Survey() {
@@ -12,12 +13,7 @@ function Survey() {
     const [healthImportance, setHealthImportance] = useState(3);
     const [allergies, setAllergies] = useState('');
 
-  const handleCheckboxChange = (state, setState) => (event) => {
-    const { value, checked } = event.target;
-    setState(
-      checked ? [...state, value] : state.filter((item) => item !== value)
-    );
-  };
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -33,6 +29,7 @@ function Survey() {
         };
 
         await callApiAddSurvey(surveyData);
+        navigate('/');
     };
 
     const callApiAddSurvey = async (surveyData) => {

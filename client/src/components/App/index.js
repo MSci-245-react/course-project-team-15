@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate} from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
 
 import HomePage from './HomePage';
@@ -19,16 +19,9 @@ import Survey from './Survey';
 function App() {
   const [surveyCompleted, setSurveyCompleted] = useState(false);
 
-  React.useEffect(() => {
-    const completed = localStorage.getItem('surveyCompleted') === 'true';
-    setSurveyCompleted(completed);
-  }, []);
-
   const handleSurveyComplete = () => {
-    localStorage.setItem('surveyCompleted', 'true');
     setSurveyCompleted(true);
   };
-
 
   return (
     <Router>
@@ -45,9 +38,7 @@ function App() {
 
       <Container>
         <Routes>
-        {/* <Route path="/" element={surveyCompleted ? <HomePage /> : <Navigate to="/survey" />} />
-        <Route path="/survey" element={<Survey onSurveyComplete={handleSurveyComplete} />} /> */}
-        <Route path="/survey" element={<Survey />} />
+        <Route path="/survey" element={<Survey onSurveyComplete={handleSurveyComplete} />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/FeedPage" element={<FeedPage />} />
         <Route path="/Recommendations" element={<Recommendations />} />
