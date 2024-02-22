@@ -88,7 +88,7 @@ function Survey() {
         }
 
         if (allergies.length == 0) {
-            errors.allergies = 'Please write any allergies or if not write none ';
+            errors.allergies = 'Please write any allergies or none ';
             valid = false;
         }
 
@@ -103,8 +103,10 @@ function Survey() {
             
             {/* Cuisine Preferences */}
             <FormControl fullWidth margin="normal">
-                <InputLabel>Cuisine</InputLabel>
+                <InputLabel id="cuisine-label">Cuisine</InputLabel>
                 <Select 
+                    labelId="cuisine-label"
+                    id="cuisine-select"
                     value={cuisinePreferences} 
                     label="Cuisine" 
                     onChange={(e) => setCuisinePreferences(e.target.value)}
@@ -117,8 +119,10 @@ function Survey() {
 
             {/* Dietary Restrictions */}
             <FormControl fullWidth margin="normal">
-                <InputLabel>Dietary</InputLabel>
+                <InputLabel id="dietary-label">Dietary</InputLabel>
                 <Select 
+                    labelId="dietary-label"
+                    id="dietary-select"
                     value={dietaryRestrictions} 
                     label="Dietary" 
                     onChange={(e) => setDietaryRestrictions(e.target.value)}
@@ -132,8 +136,10 @@ function Survey() {
 
             {/* Meal Preferences */}
             <FormControl fullWidth margin="normal">
-                <InputLabel>Meal Preferences</InputLabel>
+                <InputLabel id="meal-label">Meal Preferences</InputLabel>
                 <Select 
+                    labelId="meal-label"
+                    id="meal-select"
                     value={mealPreferences} 
                     label="Meal Preferences" 
                     onChange={(e) => setMealPreferences(e.target.value)}
@@ -163,8 +169,10 @@ function Survey() {
 
             {/* Ambiance Preference */}
             <FormControl fullWidth margin="normal">
-                <InputLabel>Ambiance Preferences</InputLabel>
+                <InputLabel id="ambiance-label">Ambiance Preferences</InputLabel>
                 <Select 
+                    labelId="ambiance-label"
+                    id="ambiance-select"
                     value={ambiancePreference} 
                     label="Ambiance Preferences" 
                     onChange={(e) => setAmbiancePreference(e.target.value)}
@@ -178,8 +186,10 @@ function Survey() {
 
             {/* Dining Frequency */} 
             <FormControl fullWidth margin="normal">
-                <InputLabel>Dining Frequency</InputLabel>
+                <InputLabel id="dining-label">Dining Frequency</InputLabel>
                 <Select 
+                    labelId="dining-label"
+                    id="dining-select"
                     value={diningFrequency} 
                     label="Dining Frequency" 
                     onChange={(e) => setDiningFrequency(e.target.value)}
