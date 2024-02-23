@@ -1,12 +1,3 @@
-/*
-describe('empty spec', () => {
-  it('can view the home page', () => {
-    cy.visit('/');
-    cy.contains('Welcome to TasteOfLoo');
-  });
-});
-*/
-
 describe('Profile Page', () => {
   beforeEach(() => {
     // Visit the profile page before each test
