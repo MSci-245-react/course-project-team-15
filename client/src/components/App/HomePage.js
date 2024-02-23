@@ -1,140 +1,309 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import {
+  Container,
+  Typography,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  CardMedia,
+  TextField,
+  InputAdornment,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControl,
+  Rating,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  Box,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Button, Grid, Card, CardContent, CardMedia, TextField, 
-    InputAdornment, InputLabel, Select, MenuItem, FormControl, Rating} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
 function HomePage() {
-    const [cuisine, setCuisine] = React.useState('');
-    const [price, setPrice] = React.useState('');
-    const [dietary, setDietary] = React.useState('');
-    const [rating, setRating] = React.useState(2);
+  const [cuisine, setCuisine] = useState([]);
+  const [price, setPrice] = useState([]);
+  const [dietary, setDietary] = useState([]);
+  const [meals, setMeals] = useState([]);
+  const [rating, setRating] = useState(1);
 
-    const handleCuisineChange = (event) => {
-        setCuisine(event.target.value);
-    };
-    const handlePriceChange = (event) => {
-        setPrice(event.target.value);
-    };
-    const handleDietaryChange = (event) => {
-        setDietary(event.target.value);
-    };
-    const handleRatingChange = (event, newValue) => {
-        setRating(newValue);
-    };
+  const handleCuisineChange = (event) => {
+    const { value, checked } = event.target;
+    setCuisine((prevState) => {
+      if (checked) {
+        return [...prevState, value];
+      } else {
+        return prevState.filter((item) => item !== value);
+      }
+    });
+  };
 
-    const navigate = useNavigate();
-    const [restaurants, setRestaurants] = useState([
-        {
-            id: '1',
-            name: 'Pasta Paradise',
-            description: 'A delightful journey through the flavors of Italy.',
-            imageUrl: '/static/images/cards/italian.png',
-            rating: 4.5,
-        }
-    ]);
+  const handlePriceChange = (event) => {
+    const { value, checked } = event.target;
+    setPrice((prevState) => {
+      if (checked) {
+        return [...prevState, value];
+      } else {
+        return prevState.filter((item) => item !== value);
+      }
+    });
+  };
 
-    const handleCardClick = (id) => {
-        navigate(`/restaurant/${id}`);
-    };
+  const handleDietaryChange = (event) => {
+    const { value, checked } = event.target;
+    setDietary((prevState) => {
+      if (checked) {
+        return [...prevState, value];
+      } else {
+        return prevState.filter((item) => item !== value);
+      }
+    });
+  };
 
-    return (
+  const handleMealsChange = (event) => {
+    const { value, checked } = event.target;
+    setMeals((prevState) => {
+      if (checked) {
+        return [...prevState, value];
+      } else {
+        return prevState.filter((item) => item !== value);
+      }
+    });
+  };
+
+  const handleRatingChange = (event, newValue) => {
+    setRating(newValue);
+  };
+
+  const navigate = useNavigate();
+  const [restaurants, setRestaurants] = useState([
+    {
+      id: '1',
+      name: 'Pasta Paradise',
+      description: 'A delightful journey through the flavors of Italy.',
+      imageUrl: '/static/images/cards/italian.png',
+      rating: 4.5,
+    },
+  ]);
+
+  const handleCardClick = (id) => {
+    navigate(`/restaurant/${id}`);
+  };
+
+  const applyFilters = () => {
+    // Apply filters based on selected checkboxes, rating, etc.
+    // You can use the selected states (cuisine, price, dietary, meals, rating) here
+  };
+
+  return (
     <Container maxWidth="lg">
-        <Typography variant="h3" component="h1">
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={12}>
+          <Typography variant="h3" component="h1" align="center">
             Welcome to TasteOfLoo
-        </Typography>
-        <Typography variant="h6" component="h2">
+          </Typography>
+          <Typography variant="h3" component="h2" align="center" style={{ fontSize: '24px' }}>
             Discover the best places to eat around the University of Waterloo.
-        </Typography>
-
-        {/* Search and Filter Section */}
-        <Grid container spacing={2} justifyContent="center" style={{ marginBottom: '20px' }}>
-            <Grid item xs={12}>
-                <TextField fullWidth label="Search Restaurants" variant="outlined" />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-                    <FormControl fullWidth>
-                        <InputLabel id="cuisine-label">Cuisine</InputLabel>
-                        <Select
-                            labelId="cuisine-label"
-                            id="cuisine-select"
-                            value={cuisine}
-                            label="Cuisine"
-                            onChange={handleCuisineChange}
-                        >
-                            <MenuItem value="Italian">Italian</MenuItem>
-                            <MenuItem value="Chinese">Chinese</MenuItem>
-                            <MenuItem value="Indian">Indian</MenuItem>
-                        </Select>
-                    </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={3}>
-                    <FormControl fullWidth>
-                        <InputLabel id="price-label">Price</InputLabel>
-                        <Select
-                            labelId="price-label"
-                            id="price-select"
-                            value={price}
-                            label="Price"
-                            onChange={handlePriceChange}
-                        >
-                            <MenuItem value="Low">Low</MenuItem>
-                            <MenuItem value="Medium">Medium</MenuItem>
-                            <MenuItem value="High">High</MenuItem>
-                        </Select>
-                    </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={3}>
-                    <FormControl fullWidth>
-                        <InputLabel id="dietary-label">Dietary Restrictions</InputLabel>
-                        <Select
-                            labelId="dietary-label"
-                            id="dietary-select"
-                            value={dietary}
-                            label="Dietary Restrictions"
-                            onChange={handleDietaryChange}
-                        >
-                            <MenuItem value="Vegan">Vegan</MenuItem>
-                            <MenuItem value="Vegetarian">Vegetarian</MenuItem>
-                            <MenuItem value="Gluten-Free">Gluten-Free</MenuItem>
-                        </Select>
-                    </FormControl>
-            </Grid> 
-            <Grid item xs={12} sm={3}>
-                <Typography component="legend">Rating</Typography>
-                <Rating
-                    name="simple-controlled"
-                    value={rating}
-                    onChange={handleRatingChange}
+          </Typography>
+          <Grid container justifyContent="center" alignItems="center">
+            <Grid item xs={6}>
+              <Box mt={5} mb={2}>
+                <TextField
+                  label="Search"
+                  variant="outlined"
+                  fullWidth
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton color="primary" onClick={applyFilters}>
+                          <SearchIcon />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
                 />
+              </Box>
             </Grid>
-            </Grid>
-
-            {/* Restaurant Listings*/}
-            <Grid container spacing={3}>
-                {restaurants.map((restaurant) => (
-                <Grid item xs={12} sm={6} md={4} key={restaurant.id}>
-                    <Card onClick={() => handleCardClick(restaurant.id)} style={{ cursor: 'pointer' }}>
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={restaurant.imageUrl}
-                            alt={restaurant.name}
-                        />
-                        <CardContent>
-                            <Typography gutterBottom variant="h5" component="div">
-                                {restaurant.name}
-                            </Typography>
-                            <Rating value={restaurant.rating} readOnly />
-                            <Typography variant="body2" color="text.secondary">
-                                {restaurant.description}
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                 </Grid>
-            ))}
+          </Grid>
         </Grid>
+      </Grid>
+      {/* Search and Filter Section */}
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={3}>
+          <Typography variant="h3" component="h3" style={{ fontSize: '24px' }}>Filters</Typography>
+          <Grid container direction="column">
+            <Grid item>
+              <FormControl fullWidth>
+                <Typography variant="body1" style={{ fontSize: '20px' }}>Cuisine Type</Typography>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('american'), value: 'american'}})}>
+                  <input
+                    type="checkbox"
+                    name="american"
+                    checked={cuisine.includes('american')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="american">American</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('italian'), value: 'italian'}})}>
+                  <input
+                    type="checkbox"
+                    name="italian"
+                    checked={cuisine.includes('italian')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="italian">Italian</label>
+                </label>
+                <label style={{ marginBottom: '20px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('asian'), value: 'asian'}})}>
+                  <input
+                    type="checkbox"
+                    name="asian"
+                    checked={cuisine.includes('asian')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="asian">Asian</label>
+                </label>
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <FormControl fullWidth>
+                <Typography variant="body1" style={{ fontSize: '20px' }}>Price Range</Typography>
+                <label style={{ marginBottom: '5px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('low'), value: 'low'}})}>
+                  <input
+                    type="checkbox"
+                    name="low"
+                    checked={price.includes('low')}
+                    onChange={handlePriceChange}
+                  />
+                  <label htmlFor="low">Low</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('medium'), value: 'medium'}})}>
+                  <input
+                    type="checkbox"
+                    name="medium"
+                    checked={price.includes('medium')}
+                    onChange={handlePriceChange}
+                  />
+                  <label htmlFor="medium">Medium</label>
+                </label>
+                <label style={{ marginBottom: '20px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('high'), value: 'high'}})}>
+                  <input
+                    type="checkbox"
+                    name="high"
+                    checked={price.includes('high')}
+                    onChange={handlePriceChange}
+                  />
+                  <label htmlFor="high">High</label>
+                </label>
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <FormControl fullWidth>
+                <Typography variant="body1" style={{ fontSize: '20px' }}>Dietary Options</Typography>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleDietaryChange({target: {checked: !dietary.includes('vegetarian'), value: 'vegetarian'}})}>
+                  <input
+                    type="checkbox"
+                    name="vegetarian"
+                    checked={dietary.includes('vegetarian')}
+                    onChange={handleDietaryChange}
+                  />
+                  <label htmlFor="vegetarian">Vegetarian Friendly</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleDietaryChange({target: {checked: !dietary.includes('vegan'), value: 'vegan'}})}>
+                  <input
+                    type="checkbox"
+                    name="vegan"
+                    checked={dietary.includes('vegan')}
+                    onChange={handleDietaryChange}
+                  />
+                  <label htmlFor="vegan">Vegan Options</label>
+                </label>
+                <label style={{ marginBottom: '20px' }} onClick={() => handleDietaryChange({target: {checked: !dietary.includes('gluten-free'), value: 'gluten-free'}})}>
+                  <input
+                    type="checkbox"
+                    name="gluten-free"
+                    checked={dietary.includes('gluten-free')}
+                    onChange={handleDietaryChange}
+                  />
+                  <label htmlFor="gluten-free">Gluten-Free Options</label>
+                </label>
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <FormControl fullWidth>
+                <Typography variant="body1" style={{ fontSize: '20px' }}>Meal Times</Typography>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleMealsChange({target: {checked: !meals.includes('breakfast'), value: 'breakfast'}})}>
+                  <input
+                    type="checkbox"
+                    name="breakfast"
+                    checked={meals.includes('breakfast')}
+                    onChange={handleMealsChange}
+                  />
+                  <label htmlFor="breakfast">Breakfast</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleMealsChange({target: {checked: !meals.includes('brunch'), value: 'brunch'}})}>
+                  <input
+                    type="checkbox"
+                    name="brunch"
+                    checked={meals.includes('brunch')}
+                    onChange={handleMealsChange}
+                  />
+                  <label htmlFor="brunch">Brunch</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleMealsChange({target: {checked: !meals.includes('lunch'), value: 'lunch'}})}>
+                  <input
+                    type="checkbox"
+                    name="lunch"
+                    checked={meals.includes('lunch')}
+                    onChange={handleMealsChange}
+                  />
+                  <label htmlFor="lunch">Lunch</label>
+                </label>
+                <label style={{ marginBottom: '20px' }} onClick={() => handleMealsChange({target: {checked: !meals.includes('dinner'), value: 'dinner'}})}>
+                  <input
+                    type="checkbox"
+                    name="dinner"
+                    checked={meals.includes('dinner')}
+                    onChange={handleMealsChange}
+                  />
+                  <label htmlFor="dinner">Dinner</label>
+                </label>
+              </FormControl>
+            </Grid>
+            <Grid item>
+              <Typography component="legend" style={{ fontSize: '20px' }}>Rating</Typography>
+              <Rating name="simple-controlled" value={rating} onChange={handleRatingChange} />
+            </Grid>
+          </Grid>
+          <Button variant="contained" color="primary" onClick={applyFilters}>
+            Apply Filters
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={9}>
+          <Grid container spacing={3}>
+            {restaurants.map((restaurant) => (
+              <Grid item xs={12} sm={6} md={4} key={restaurant.id}>
+                <Card onClick={() => handleCardClick(restaurant.id)} style={{ cursor: 'pointer' }}>
+                  <CardMedia component="img" height="140" image={restaurant.imageUrl} alt={restaurant.name} />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {restaurant.name}
+                    </Typography>
+                    <Rating value={restaurant.rating} readOnly />
+                    <Typography variant="body2" color="text.secondary">
+                      {restaurant.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      </Grid>
     </Container>
   );
 }
 
 export default HomePage;
+
