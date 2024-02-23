@@ -15,6 +15,7 @@ import FavouritesList from './FavouritesList';
 import Friends from './Friends';
 import Survey from './Survey';
 
+import CreateAccount from './CreateAccount';
 
 function App() {
   const [surveyCompleted, setSurveyCompleted] = useState(false);
@@ -33,6 +34,8 @@ function App() {
           <Button color="inherit" component={Link} to="/FeedPage">Feed</Button>
           <Button color="inherit" component={Link} to="/Recommendations">Recommendations</Button>
           <Button color="inherit" component={Link} to="/ProfilePage">Profile</Button>
+
+          <Button color="inherit" component={Link} to="/CreateAccount">Create Account</Button>
         </Toolbar>
       </AppBar>
 
@@ -50,6 +53,8 @@ function App() {
         <Route path="/WantToTryList" element={<WantToTryList />} />
         <Route path="/FavouritesList" element={<FavouritesList />} />
         <Route path="/Friends" element={<Friends />} />
+
+        <Route path="/CreateAccount" element={<CreateAccount />} />
         </Routes>
       </Container>
     </Router>
