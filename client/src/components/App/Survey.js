@@ -155,7 +155,7 @@ function Survey() {
             <FormControl fullWidth margin="normal">
                 <FormLabel>Budget Per Meal</FormLabel>
                 <Slider
-                    value={budget}
+                    value={Number(budget)}
                     onChange={(e, newValue) => setBudget(newValue)}
                     aria-labelledby="budget-slider"
                     valueLabelDisplay="auto"
