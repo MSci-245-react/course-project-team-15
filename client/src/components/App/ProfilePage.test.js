@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent} from '@testing-library/react';
 import ProfilePage from './ProfilePage';
 import { BrowserRouter as Router } from 'react-router-dom';
+import '@testing-library/jest-dom';
 
 const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
