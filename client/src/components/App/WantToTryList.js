@@ -23,7 +23,7 @@ function WantToTryList() {
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>Want To Try</Typography>
+      <Typography variant="h4" gutterBottom>Shortlist</Typography>
       <List>
         {beenToRestaurants.map((restaurant) => (
           <ListItem key={restaurant.id} divider>
