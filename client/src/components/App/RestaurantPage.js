@@ -57,7 +57,7 @@ function RestaurantPage() {
       <Box sx={{ '& > :not(style)': { m: 1 } }}>
       <Button onClick={navigateToReviewPage} variant="outlined" color="primary">Write a Review</Button>
       <Button onClick={handleBeenToClick} variant="outlined" color={beenTo ? "secondary" : "primary"}>{beenTo ? "Visited" : "Been To"}</Button>
-      <Button onClick={handleWantToTryClick} variant="outlined" color={wantToTry ? "secondary" : "primary"}>{wantToTry ? "Shortlisted" : "Want To Try"}</Button>
+      <Button onClick={handleWantToTryClick} variant="outlined" color={wantToTry ? "secondary" : "primary"}>{wantToTry ? "Shortlisted" : "Shortlist"}</Button>
       <Button onClick={handleFavouriteClick} variant="outlined" color={isFavourite ? "secondary" : "primary"}>{isFavourite ? "Favourite" : "Add to Favourites"}</Button>
       </Box>
 
