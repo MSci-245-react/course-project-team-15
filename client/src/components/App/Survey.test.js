@@ -1,8 +1,6 @@
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Survey from './Survey';
-
-
 
 describe('Survey Component', () => {
   test('calls submit when submit button is clicked', async () => {
