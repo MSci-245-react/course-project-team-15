@@ -12,9 +12,13 @@ function Review() {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [enteredTitle, setEnteredTitle] = useState('');
   const [enteredReview, setEnteredReview] = useState('');
-  const [selectedRating, setSelectedRating] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState({});
+  
+  // State variables for different ratings
+  const [customerServiceRating, setCustomerServiceRating] = useState('');
+  const [atmosphereRating, setAtmosphereRating] = useState('');
+  const [priceRating, setPriceRating] = useState('');
 
   React.useEffect(() => {
     loadMovies();
@@ -64,9 +68,22 @@ function Review() {
     setShowConfirmation(false);
   };
 
-  const handleRatingChange = (event) => {
-    setSelectedRating(event.target.value);
-    setErrors((prevErrors) => ({ ...prevErrors, selectedRating: false }));
+  // Event handlers for rating changes
+  const handleCustomerServiceRatingChange = (event) => {
+    setCustomerServiceRating(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, customerServiceRating: false }));
+    setShowConfirmation(false);
+  };
+
+  const handleAtmosphereRatingChange = (event) => {
+    setAtmosphereRating(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, atmosphereRating: false }));
+    setShowConfirmation(false);
+  };
+
+  const handlePriceRatingChange = (event) => {
+    setPriceRating(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, priceRating: false }));
     setShowConfirmation(false);
   };
 
@@ -86,8 +103,16 @@ function Review() {
       newErrors.enteredReview = true;
       hasErrors = true;
     }
-    if (!selectedRating) {
-      newErrors.selectedRating = true;
+    if (!customerServiceRating) {
+      newErrors.customerServiceRating = true;
+      hasErrors = true;
+    }
+    if (!atmosphereRating) {
+      newErrors.atmosphereRating = true;
+      hasErrors = true;
+    }
+    if (!priceRating) {
+      newErrors.priceRating = true;
       hasErrors = true;
     }
 
@@ -101,7 +126,9 @@ function Review() {
         movieID: selectedMovie.id,
         reviewTitle: enteredTitle,
         reviewContent: enteredReview,
-        reviewScore: selectedRating
+        customerServiceRating: customerServiceRating,
+        atmosphereRating: atmosphereRating,
+        priceRating: priceRating
       };
 
       // Send the review data to the server using POST request
@@ -157,8 +184,19 @@ function Review() {
         {errors.enteredReview && <Typography color="red">Enter your review</Typography>}
       </Grid>
       <Grid item xs={12}>
-        <ReviewRating selectedRating={selectedRating} handleRatingChange={handleRatingChange} />
-        {errors.selectedRating && <Typography color="red">Select the rating</Typography>}
+        <Typography variant="h6">Customer Service</Typography>
+        <ReviewRating selectedRating={customerServiceRating} handleRatingChange={handleCustomerServiceRatingChange} />
+        {errors.customerServiceRating && <Typography color="red">Select the rating</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6">Atmosphere</Typography>
+        <ReviewRating selectedRating={atmosphereRating} handleRatingChange={handleAtmosphereRatingChange} />
+        {errors.atmosphereRating && <Typography color="red">Select the rating</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6">Price</Typography>
+        <ReviewRating selectedRating={priceRating} handleRatingChange={handlePriceRatingChange} />
+        {errors.priceRating && <Typography color="red">Select the rating</Typography>}
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
@@ -171,7 +209,9 @@ function Review() {
           <Typography variant="subtitle1">Movie: {selectedMovie.name}</Typography>
           <Typography variant="subtitle1">Review Title: {enteredTitle}</Typography>
           <Typography variant="subtitle1">Review Body: {enteredReview}</Typography>
-          <Typography variant="subtitle1">Rating: {selectedRating}</Typography>
+          <Typography variant="subtitle1">Customer Service Rating: {customerServiceRating}</Typography>
+          <Typography variant="subtitle1">Atmosphere Rating: {atmosphereRating}</Typography>
+          <Typography variant="subtitle1">Price Rating: {priceRating}</Typography>
         </Grid>
       )}
     </Grid>
