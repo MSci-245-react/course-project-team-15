@@ -54,7 +54,7 @@ describe('ProfilePage Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/BeenToList');
 
     fireEvent.click(screen.getByText('Shortlist'));
-    expect(mockNavigate).toHaveBeenCalledWith('/WantToTryList');
+    expect(mockNavigate).toHaveBeenCalledWith('/Shortlist');
 
     fireEvent.click(screen.getByText('Favourites'));
     expect(mockNavigate).toHaveBeenCalledWith('/FavouritesList');
