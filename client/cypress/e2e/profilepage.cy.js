@@ -28,9 +28,10 @@ describe('Profile Page', () => {
     cy.contains('Been').click();
     cy.url().should('include', '/BeenToList');
     cy.go('back');
-
-    cy.contains('Want To Try').click();
-    cy.url().should('include', '/WantToTryList');
+  
+    cy.get('#root > div > div > button:nth-child(5)').click()
+    cy.contains('Shortlist').click();
+    cy.url().should('include', '/Shortlist');
     cy.go('back');
 
     cy.contains('Favourites').click();

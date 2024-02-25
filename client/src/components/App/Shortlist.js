@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
 
-function WantToTryList() {
+function Shortlist() {
   const navigate = useNavigate();
   const [beenToRestaurants, setBeenToRestaurants] = useState([
     {
@@ -36,4 +36,4 @@ function WantToTryList() {
   );
 }
 
-export default WantToTryList;
+export default Shortlist;

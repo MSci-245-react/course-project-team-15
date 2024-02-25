@@ -10,7 +10,7 @@ import Review from './Review';
 import RestaurantPage from './RestaurantPage';
 import ReviewsList from './ReviewsList';
 import BeenToList from './BeenToList';
-import WantToTryList from './WantToTryList';
+import Shortlist from './Shortlist';
 import FavouritesList from './FavouritesList';
 import Friends from './Friends';
 import Survey from './Survey';
@@ -50,7 +50,7 @@ function App() {
         <Route path="/review" element={<Review />} />
         <Route path="/ReviewsList" element={<ReviewsList />} />
         <Route path="/BeenToList" element={<BeenToList />} />
-        <Route path="/WantToTryList" element={<WantToTryList />} />
+        <Route path="/Shortlist" element={<Shortlist />} />
         <Route path="/FavouritesList" element={<FavouritesList />} />
         <Route path="/Friends" element={<Friends />} />
 

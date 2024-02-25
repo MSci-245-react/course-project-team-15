@@ -39,7 +39,7 @@ function ProfilePage() {
       {/* All Lists */}
       <Button onClick={() => navigate('/ReviewsList')}>My Reviews</Button>
       <Button onClick={() => navigate('/BeenToList')}>Been</Button>
-      <Button onClick={() => navigate('/WantToTryList')}>Shortlist</Button>
+      <Button onClick={() => navigate('/Shortlist')}>Shortlist</Button>
       <Button onClick={() => navigate('/FavouritesList')}>Favourites</Button>
       <Button onClick={() => navigate('/friends')}>My Friends</Button>
     </Container>
