@@ -318,7 +318,12 @@ function HomePage() {
                     <Typography gutterBottom variant="h5" component="div">
                       {restaurant.name}
                     </Typography>
-                    <Rating value={restaurant.rating} readOnly />
+                    <Box display="flex" alignItems="center" my={2}>
+                      <Rating name="read-only" value={restaurant.rating || 0} readOnly />
+                      <Typography variant="subtitle1" ml={1}>
+                        {restaurant.rating || 'N/A'}
+                      </Typography>
+                    </Box>
                     <Typography variant="body2" color="text.secondary">
                       {restaurant.description}
                     </Typography>

@@ -57,6 +57,22 @@ app.get('/api/restaurants', (req, res) => {
     connection.end();
 });
 
+// API to get a specific restaurant from the database
+app.get('/api/restaurants/:id', (req, res) => {
+    let connection = mysql.createConnection(config);
+    const { id } = req.params; // Extract `id` from URL parameters
+
+    const sql = `SELECT Name, Description, Categories, AverageRating as rating, Website, Price, OpeningHours, FeaturedImage, id FROM Restaurants WHERE id = ?`;
+
+    connection.query(sql, [id], (error, results) => { 
+        if (error) {
+            return console.error(error.message);
+        }
+        res.json(results[0] || {}); 
+    });
+    connection.end();
+});
+
 // API to add a review to the database
 // app.post('/api/addReview', (req, res) => {
 // 	const { userID, movieID, reviewTitle, reviewContent, reviewScore } = req.body;
