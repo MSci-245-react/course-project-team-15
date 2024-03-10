@@ -6,12 +6,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
 import response from 'express';
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
@@ -39,21 +42,20 @@ app.post('/api/survey', (req, res) => {
 	connection.end();
   });
 
-// API to read movies from the database
-// app.post('/api/getMovies', (req, res) => {
-// 	let connection = mysql.createConnection(config);
+// API to get all restaurants from the database
+app.get('/api/restaurants', (req, res) => {
+    let connection = mysql.createConnection(config);
 
-// 	const sql = `SELECT id, name, year, quality FROM movies`;
+    const sql = `SELECT Name as name, Description as description, Fulladdress, AverageRating as rating, FeaturedImage, id FROM Restaurants`;
 
-// 	connection.query(sql, (error, results, fields) => {
-// 		if (error) {
-// 			return console.error(error.message);
-// 		}
-// 		let string = JSON.stringify(results);
-// 		res.send({ express: string });
-// 	});
-// 	connection.end();
-// });
+    connection.query(sql, (error, results) => {
+        if (error) {
+            return console.error(error.message);
+        }
+        res.json(results);
+    });
+    connection.end();
+});
 
 // API to add a review to the database
 // app.post('/api/addReview', (req, res) => {

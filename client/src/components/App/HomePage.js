@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -78,15 +78,38 @@ function HomePage() {
   };
 
   const navigate = useNavigate();
-  const [restaurants, setRestaurants] = useState([
-    {
-      id: '1',
-      name: 'Pasta Paradise',
-      description: 'A delightful journey through the flavors of Italy.',
-      imageUrl: '/static/images/cards/italian.png',
-      rating: 4.5,
-    },
-  ]);
+  const [restaurants, setRestaurants] = useState([]);
+
+  React.useEffect(() => {
+    loadRestaurants();
+  }, []);
+
+  const loadRestaurants = () => {
+    callApiLoadRestaurants()
+      .then(res => {
+        console.log("callApiLoadRestaurants returned: ", res);
+        setRestaurants(res); 
+      })
+      .catch(err => console.error("Failed to load restaurants: ", err));
+  }
+
+  const callApiLoadRestaurants = async () => {
+    const url = "/api/restaurants";
+    console.log(url);
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    });
+    if (response.status !== 200) {
+        const body = await response.text();
+        throw Error(body.message || body);
+    }
+    return response.json();
+};
+
 
   const handleCardClick = (id) => {
     navigate(`/restaurant/${id}`);
@@ -285,7 +308,12 @@ function HomePage() {
             {restaurants.map((restaurant) => (
               <Grid item xs={12} sm={6} md={4} key={restaurant.id}>
                 <Card onClick={() => handleCardClick(restaurant.id)} style={{ cursor: 'pointer' }}>
-                  <CardMedia component="img" height="140" image={restaurant.imageUrl} alt={restaurant.name} />
+                  <CardMedia 
+                    component="img" 
+                    height="140" 
+                    image={restaurant.FeaturedImage}
+                    alt={restaurant.name} 
+                  />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                       {restaurant.name}
