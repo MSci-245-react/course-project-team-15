@@ -1,28 +1,35 @@
 import React, {useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Rating, Button, Box} from '@mui/material';
+import { Container, Typography, Rating, Button, Box, Link} from '@mui/material';
 
 function RestaurantPage() {
   const { id } = useParams();
-  const [restaurantDetails, setRestaurantDetails] = useState({
-    name: "",
-    cuisine: "",
-    price: "",
-    rating: 0,
-    description: ""
-  });
+  const [restaurantDetails, setRestaurantDetails] = useState({});
   
-  useEffect(() => {
-    // Will need to fetch the restaurant details from data source using the `id`
-    const fetchedRestaurantDetails = {
-      name: "Restaurant Name",
-      cuisine: "Italian",
-      price: "Medium",
-      rating: 4.5,
-      description: "Description for the restaurant."
+  React.useEffect(() => {
+    const fetchRestaurantDetails = async () => {
+      const url = `/api/restaurants/${id}`;
+      console.log(url);
+  
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+          }
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch restaurant details: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setRestaurantDetails(data);
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+      }
     };
-    setRestaurantDetails(fetchedRestaurantDetails);
-  }, [id]); 
+  
+    fetchRestaurantDetails();
+  }, [id]);
 
   const navigate = useNavigate();
   const navigateToReviewPage = () => {
@@ -47,12 +54,24 @@ function RestaurantPage() {
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" component="h1">{restaurantDetails.name}</Typography>
-      <Typography variant="h6">Cuisine: {restaurantDetails.cuisine}</Typography>
-      <Typography variant="h6">Price: {restaurantDetails.price}</Typography>
-      <Typography variant="h6">Rating:</Typography>
-      <Rating name="read-only" value={restaurantDetails.rating || 0} readOnly />
-      <Typography paragraph>{restaurantDetails.description}</Typography>
+      <Typography variant="h4" component="h1" gutterBottom>{restaurantDetails.Name}</Typography>
+
+      <Typography variant="h6">Description: {restaurantDetails.Description}</Typography>
+      <Typography variant="h6">Categories: {restaurantDetails.Categories}</Typography>
+      <Typography variant="h6">Price: {restaurantDetails.Price}</Typography>
+      
+      <Box display="flex" alignItems="center" my={2}>
+        <Rating name="read-only" value={restaurantDetails.rating || 0} readOnly />
+        <Typography variant="subtitle1" ml={1}>
+          {restaurantDetails.rating || 'N/A'}
+        </Typography>
+      </Box>
+
+      <Typography variant="h6">Website: 
+      <Link href={restaurantDetails.Website} target="_blank" rel="noopener noreferrer">{restaurantDetails.Website}</Link>
+      </Typography>
+
+      <Typography variant="h6">Opening Hours: {restaurantDetails.OpeningHours}</Typography>
       
       <Box sx={{ '& > :not(style)': { m: 1 } }}>
       <Button onClick={navigateToReviewPage} variant="outlined" color="primary">Write a Review</Button>
