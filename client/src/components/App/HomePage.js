@@ -29,6 +29,8 @@ function HomePage() {
   const [meals, setMeals] = useState([]);
   const [rating, setRating] = useState(1);
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   const handleCuisineChange = (event) => {
     const { value, checked } = event.target;
     setCuisine((prevState) => {
@@ -110,14 +112,8 @@ function HomePage() {
     return response.json();
 };
 
-
   const handleCardClick = (id) => {
     navigate(`/restaurant/${id}`);
-  };
-
-  const applyFilters = () => {
-    // Apply filters based on selected checkboxes, rating, etc.
-    // You can use the selected states (cuisine, price, dietary, meals, rating) here
   };
 
   return (
@@ -130,6 +126,7 @@ function HomePage() {
           <Typography variant="h3" component="h2" align="center" style={{ fontSize: '24px' }}>
             Discover the best places to eat around the University of Waterloo.
           </Typography>
+          {/* Search Feature */}
           <Grid container justifyContent="center" alignItems="center">
             <Grid item xs={6}>
               <Box mt={5} mb={2}>
@@ -137,10 +134,12 @@ function HomePage() {
                   label="Search"
                   variant="outlined"
                   fullWidth
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton color="primary" onClick={applyFilters}>
+                        <IconButton color="primary">
                           <SearchIcon />
                         </IconButton>
                       </InputAdornment>
@@ -152,7 +151,7 @@ function HomePage() {
           </Grid>
         </Grid>
       </Grid>
-      {/* Search and Filter Section */}
+      {/* Filter Section */}
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <Typography variant="h3" component="h3" style={{ fontSize: '24px' }}>Filters</Typography>
@@ -178,6 +177,51 @@ function HomePage() {
                   />
                   <label htmlFor="italian">Italian</label>
                 </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('indian'), value: 'indian'}})}>
+                  <input
+                    type="checkbox"
+                    name="indian"
+                    checked={cuisine.includes('indian')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="indian">Indian</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('mexican'), value: 'mexican'}})}>
+                  <input
+                    type="checkbox"
+                    name="mexican"
+                    checked={cuisine.includes('mexican')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="mexican">Mexican</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('middle eastern'), value: 'middle eastern'}})}>
+                  <input
+                    type="checkbox"
+                    name="middle eastern"
+                    checked={cuisine.includes('middle eastern')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="middle eastern">Middle Eastern</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('african'), value: 'african'}})}>
+                  <input
+                    type="checkbox"
+                    name="african"
+                    checked={cuisine.includes('african')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="african">African</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('greek'), value: 'greek'}})}>
+                  <input
+                    type="checkbox"
+                    name="greek"
+                    checked={cuisine.includes('greek')}
+                    onChange={handleCuisineChange}
+                  />
+                  <label htmlFor="greek">Greek</label>
+                </label>
                 <label style={{ marginBottom: '20px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('asian'), value: 'asian'}})}>
                   <input
                     type="checkbox"
@@ -192,32 +236,32 @@ function HomePage() {
             <Grid item>
               <FormControl fullWidth>
                 <Typography variant="body1" style={{ fontSize: '20px' }}>Price Range</Typography>
-                <label style={{ marginBottom: '5px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('low'), value: 'low'}})}>
+                <label style={{ marginBottom: '5px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('$'), value: '$'}})}>
                   <input
                     type="checkbox"
-                    name="low"
-                    checked={price.includes('low')}
+                    name="$"
+                    checked={price.includes('$')}
                     onChange={handlePriceChange}
                   />
-                  <label htmlFor="low">Low</label>
+                  <label htmlFor="$">$</label>
                 </label>
-                <label style={{ marginBottom: '5px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('medium'), value: 'medium'}})}>
+                <label style={{ marginBottom: '5px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('$$'), value: '$$'}})}>
                   <input
                     type="checkbox"
-                    name="medium"
-                    checked={price.includes('medium')}
+                    name="$$"
+                    checked={price.includes('$$')}
                     onChange={handlePriceChange}
                   />
-                  <label htmlFor="medium">Medium</label>
+                  <label htmlFor="$$">$$</label>
                 </label>
-                <label style={{ marginBottom: '20px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('high'), value: 'high'}})}>
+                <label style={{ marginBottom: '20px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('$$$'), value: '$$$'}})}>
                   <input
                     type="checkbox"
-                    name="high"
-                    checked={price.includes('high')}
+                    name="$$$"
+                    checked={price.includes('$$$')}
                     onChange={handlePriceChange}
                   />
-                  <label htmlFor="high">High</label>
+                  <label htmlFor="$$$">$$$</label>
                 </label>
               </FormControl>
             </Grid>
@@ -231,7 +275,7 @@ function HomePage() {
                     checked={dietary.includes('vegetarian')}
                     onChange={handleDietaryChange}
                   />
-                  <label htmlFor="vegetarian">Vegetarian Friendly</label>
+                  <label htmlFor="vegetarian">Vegetarian</label>
                 </label>
                 <label style={{ marginBottom: '5px' }} onClick={() => handleDietaryChange({target: {checked: !dietary.includes('vegan'), value: 'vegan'}})}>
                   <input
@@ -240,7 +284,16 @@ function HomePage() {
                     checked={dietary.includes('vegan')}
                     onChange={handleDietaryChange}
                   />
-                  <label htmlFor="vegan">Vegan Options</label>
+                  <label htmlFor="vegan">Vegan</label>
+                </label>
+                <label style={{ marginBottom: '5px' }} onClick={() => handleDietaryChange({target: {checked: !dietary.includes('halal'), value: 'halal'}})}>
+                  <input
+                    type="checkbox"
+                    name="halal"
+                    checked={dietary.includes('halal')}
+                    onChange={handleDietaryChange}
+                  />
+                  <label htmlFor="halal">Halal</label>
                 </label>
                 <label style={{ marginBottom: '20px' }} onClick={() => handleDietaryChange({target: {checked: !dietary.includes('gluten-free'), value: 'gluten-free'}})}>
                   <input
@@ -249,7 +302,7 @@ function HomePage() {
                     checked={dietary.includes('gluten-free')}
                     onChange={handleDietaryChange}
                   />
-                  <label htmlFor="gluten-free">Gluten-Free Options</label>
+                  <label htmlFor="gluten-free">Gluten-free</label>
                 </label>
               </FormControl>
             </Grid>
@@ -299,13 +352,26 @@ function HomePage() {
               <Rating name="simple-controlled" value={rating} onChange={handleRatingChange} />
             </Grid>
           </Grid>
-          <Button variant="contained" color="primary" onClick={applyFilters}>
-            Apply Filters
-          </Button>
         </Grid>
         <Grid item xs={12} md={9}>
           <Grid container spacing={3}>
-            {restaurants.map((restaurant) => (
+          {restaurants.filter(restaurant => 
+          restaurant.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+          restaurant.rating >= rating && 
+          (price.length === 0 || price.includes(restaurant.Price)) && 
+          (cuisine.length === 0 || cuisine.some(selectedCuisine =>
+            restaurant.Categories.toLowerCase().split(',').some(cat => 
+              new RegExp("\\b" + selectedCuisine.toLowerCase() + "\\b", "i").test(cat.trim())
+          ))) &&
+          (meals.length === 0 || meals.some(selectedMeal => 
+            restaurant.Categories.toLowerCase().split(',').some(meal => 
+              new RegExp("\\b" + selectedMeal.toLowerCase() + "\\b", "i").test(meal.trim())
+          ))) &&
+          (dietary.length === 0 || dietary.some(selectedDiet =>
+            restaurant.Categories.toLowerCase().split(',').some(diet =>
+              new RegExp("\\b" + selectedDiet.toLowerCase() + "\\b", "i").test(diet.trim())
+          ))))
+          .map((restaurant) => (
               <Grid item xs={12} sm={6} md={4} key={restaurant.id}>
                 <Card onClick={() => handleCardClick(restaurant.id)} style={{ cursor: 'pointer' }}>
                   <CardMedia 
@@ -318,12 +384,16 @@ function HomePage() {
                     <Typography gutterBottom variant="h5" component="div">
                       {restaurant.name}
                     </Typography>
+
                     <Box display="flex" alignItems="center" my={2}>
                       <Rating name="read-only" value={restaurant.rating || 0} readOnly />
                       <Typography variant="subtitle1" ml={1}>
                         {restaurant.rating || 'N/A'}
                       </Typography>
+                      <Typography variant="subtitle1" ml={2}><span>{restaurant.Price}</span>
+                      </Typography>
                     </Box>
+                    
                     <Typography variant="body2" color="text.secondary">
                       {restaurant.description}
                     </Typography>
