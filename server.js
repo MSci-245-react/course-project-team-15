@@ -62,7 +62,7 @@ app.get('/api/restaurants/:id', (req, res) => {
     let connection = mysql.createConnection(config);
     const { id } = req.params; // Extract `id` from URL parameters
 
-    const sql = `SELECT Name, Description, Categories, About, AverageRating as rating, Website, Price, OpeningHours, FeaturedImage, id FROM Restaurants WHERE id = ?`;
+    const sql = `SELECT Name, Description, Categories, About, Fulladdress, AverageRating as rating, Website, Price, OpeningHours, FeaturedImage, id FROM Restaurants WHERE id = ?`;
 
     connection.query(sql, [id], (error, results) => { 
         if (error) {

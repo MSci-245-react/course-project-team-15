@@ -1,33 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
 
 function FavouritesList() {
   const navigate = useNavigate();
-  const [beenToRestaurants, setBeenToRestaurants] = useState([
-    {
-      id: '1',
-      name: 'Pasta Paradise',
-      address: '123 Noodle Street, Carb City',
-    },
-    {
-      id: '2',
-      name: 'Sushi Summit',
-      address: '789 Roll Ave, Fish Town',
-    },
-  ]);
+  const [favouriteRestaurants, setFavouriteRestaurants] = useState([]);
+
+  React.useEffect(() => {
+    fetchFavouriteRestaurants();
+  }, []);
+
+  const fetchFavouriteRestaurants = async () => {
+    const favouriteRestaurantIds = JSON.parse(localStorage.getItem('favouriteRestaurants') || '[]');
+    const fetchedRestaurants = [];
+    
+    for (const id of favouriteRestaurantIds) {
+      try {
+        const response = await fetch(`/api/restaurants/${id}`);
+        if (response.ok) {
+          const data = await response.json();
+          fetchedRestaurants.push({ id, name: data.Name, address: data.FullAddress });
+        }
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+      }
+    }
+    
+    setFavouriteRestaurants(fetchedRestaurants);
+  };
 
   const handleDelete = (restaurantId) => {
-    console.log(`Delete review ${restaurantId}`);
+    const updatedFavouriteRestaurants = JSON.parse(localStorage.getItem('favouriteRestaurants') || '[]').filter(id => id !== restaurantId);
+    localStorage.setItem('favouriteRestaurants', JSON.stringify(updatedFavouriteRestaurants));
+    setFavouriteRestaurants(favouriteRestaurants.filter(restaurant => restaurant.id !== restaurantId));
+  };
+
+  const handleView = (restaurantId) => {
+    navigate(`/restaurant/${restaurantId}`);
   };
 
   return (
     <Container maxWidth="md">
       <Typography variant="h4" gutterBottom>My Favourites</Typography>
       <List>
-        {beenToRestaurants.map((restaurant) => (
+        {favouriteRestaurants.map((restaurant) => (
           <ListItem key={restaurant.id} divider>
-            <ListItemText primary={restaurant.name} secondary={restaurant.address} />
+            <ListItemText primary={restaurant.name}/>
+            <Button onClick={() => handleView(restaurant.id)} style={{ marginRight: '8px' }}>View</Button>
             <Button onClick={() => handleDelete(restaurant.id)}>Delete</Button>
           </ListItem>
         ))}
