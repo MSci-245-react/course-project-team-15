@@ -5,6 +5,7 @@ import { Container, Typography, Rating, Button, Box, Link} from '@mui/material';
 function RestaurantPage() {
   const { id } = useParams();
   const [restaurantDetails, setRestaurantDetails] = useState({});
+  const [isReviewWritten, setIsReviewWritten] = useState(false); 
   
   React.useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -27,13 +28,25 @@ function RestaurantPage() {
         console.error("Error fetching restaurant details:", error);
       }
     };
-  
+
     fetchRestaurantDetails();
+
+    // trying to save the review on page
+    const existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
+    const reviewWritten = existingReviews.some(review => review.restaurantID === id);
+    setIsReviewWritten(reviewWritten);
+
   }, [id]);
 
   const navigate = useNavigate();
-  const navigateToReviewPage = () => {
-    navigate('/review'); 
+  const handleWriteReview = () => {
+    const existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
+    const reviewToEdit = existingReviews.find(review => review.restaurantID.toString() === id);
+
+    navigate(`/review`, { state: { 
+      restaurantID: restaurantDetails.id, 
+      restaurantName: restaurantDetails.Name,
+      reviewData: reviewToEdit } });
   };
 
   const [beenTo, setBeenTo] = useState(false);
@@ -113,7 +126,7 @@ function RestaurantPage() {
       <Typography variant="h6">Opening Hours: {restaurantDetails.OpeningHours}</Typography>
       
       <Box sx={{ '& > :not(style)': { m: 1 } }}>
-      <Button onClick={navigateToReviewPage} variant="outlined" color="primary">Write a Review</Button>
+      <Button onClick={handleWriteReview} variant="outlined" color="primary"> {isReviewWritten ? "Edit Review" : "Write a Review"}</Button>
       <Button onClick={handleBeenToClick} variant="outlined" color={beenTo ? "secondary" : "primary"}>{beenTo ? "Visited" : "Been To"}</Button>
       <Button onClick={handleShortlistClick} variant="outlined" color={shortlist ? "secondary" : "primary"}>{shortlist ? "Shortlisted" : "Shortlist"}</Button>
       <Button onClick={handleFavouriteClick} variant="outlined" color={isFavourite ? "secondary" : "primary"}>{isFavourite ? "Favourite" : "Add to Favourites"}</Button>
