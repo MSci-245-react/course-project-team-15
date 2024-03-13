@@ -1,29 +1,26 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button, Rating } from '@mui/material';
 
 function ReviewsList() {
-  // Using these as example
-  const reviews = [
-    {
-      restaurantName: 'Pasta Paradise',
-      address: '123 Noodle Street, Carb City',
-      review: 'Loved the spaghetti! Cozy atmosphere and friendly staff.',
-      rating: 4,
-    },
-    {
-      restaurantName: 'Sushi Summit',
-      address: '789 Roll Ave, Fish Town',
-      review: 'Fresh sushi, great variety. A bit pricey but worth it.',
-      rating: 5,
-    }
-  ];
+  const [reviews, setReviews] = useState([]);
+  const navigate = useNavigate();
 
-  const handleEditReview = (restaurantId) => {
-    console.log(`Edit review ${restaurantId}`);
+  React.useEffect(() => {
+    const loadedReviews = JSON.parse(localStorage.getItem('reviews')) || [];
+    setReviews(loadedReviews);
+  }, []);
+
+  const handleEditReview = (index) => {
+    const reviewToEdit = reviews[index];
+    navigate('/review', { state: { reviewData: { ...reviewToEdit, index } } });
   };
 
-  const handleDeleteReview = (restaurantId) => {
-    console.log(`Delete review ${restaurantId}`);
+  const handleDeleteReview = (index) => {
+    let reviews = JSON.parse(localStorage.getItem('reviews'));
+    reviews.splice(index, 1);
+    localStorage.setItem('reviews', JSON.stringify(reviews));
+    setReviews(reviews);
   };
 
   return (
@@ -39,8 +36,6 @@ function ReviewsList() {
                   <Typography component="span" variant="body2" color="text.primary">
                     {review.address}
                   </Typography>
-                  — {review.review}
-                  <Rating name="read-only" value={review.rating} readOnly />
                   <Button onClick={() => handleEditReview(index)}>Edit</Button>
                   <Button onClick={() => handleDeleteReview(index)}>Delete</Button>
                 </>

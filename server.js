@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import bodyParser from 'body-parser';
 import response from 'express';
 import cors from 'cors';
+import multer from 'multer';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,7 +63,7 @@ app.get('/api/restaurants/:id', (req, res) => {
     let connection = mysql.createConnection(config);
     const { id } = req.params; // Extract `id` from URL parameters
 
-    const sql = `SELECT Name, Description, Categories, About, AverageRating as rating, Website, Price, OpeningHours, FeaturedImage, id FROM Restaurants WHERE id = ?`;
+    const sql = `SELECT Name, Description, Categories, About, Fulladdress, AverageRating as rating, Website, Price, OpeningHours, FeaturedImage, id FROM Restaurants WHERE id = ?`;
 
     connection.query(sql, [id], (error, results) => { 
         if (error) {
@@ -73,7 +74,31 @@ app.get('/api/restaurants/:id', (req, res) => {
     connection.end();
 });
 
-// API to add a review to the database
+// API to add a restaurant review to the database
+// app.use('/uploads', express.static('uploads'));
+const upload = multer({ dest: 'uploads/' }); 
+app.post('/api/addRestaurantReview', upload.single('photo'), (req, res) => {
+  let connection = mysql.createConnection(config);
+
+  const { userID, restaurantID, reviewTitle, reviewContent, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, priceRating, cost } = req.body;
+  const photoURL = req.file ? req.file.path : null;
+  // console.log("Photo URL:", photoURL);
+
+  const sql = `INSERT INTO RestaurantReviews (userID, restaurantID, reviewTitle, reviewContent, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, valueForMoneyRating, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  const data = [userID, restaurantID, reviewTitle, reviewContent, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, priceRating, cost];
+
+  connection.query(sql, data, (error, results) => {
+    if (error) {
+      console.error("Error adding restaurant review:", error.message);
+      return res.status(500).json({ error: "Error adding restaurant review to the database" });
+    }
+
+    return res.status(200).json({ success: true, message: "Restaurant review successfully added", reviewID: results.insertId });
+  });
+  connection.end();
+});
+
 // app.post('/api/addReview', (req, res) => {
 // 	const { userID, movieID, reviewTitle, reviewContent, reviewScore } = req.body;
 

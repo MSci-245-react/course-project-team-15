@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Grid, Avatar, Paper} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,11 +7,22 @@ function ProfilePage() {
   const userBio = "A brief bio about the user.";
   const reviewsCount = 2;
   const friendsCount = 2;
-  const vistedCount = 0;
-  const shortlistedCount = 0;
-  const favouritesCount = 0;
+
+  const [visitedCount, setVisitedCount] = useState(0);
+  const [shortlistedCount, setShortlistedCount] = useState(0);
+  const [favouritesCount, setFavouritesCount] = useState(0);
 
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const beenToRestaurants = JSON.parse(localStorage.getItem('beenToRestaurants') || '[]');
+    const shortlistedRestaurants = JSON.parse(localStorage.getItem('shortlistedRestaurants') || '[]');
+    const favouriteRestaurants = JSON.parse(localStorage.getItem('favouriteRestaurants') || '[]');
+    
+    setVisitedCount(beenToRestaurants.length);
+    setShortlistedCount(shortlistedRestaurants.length);
+    setFavouritesCount(favouriteRestaurants.length);
+  }, []);
 
   return (
     <Container maxWidth="md">
@@ -29,7 +40,7 @@ function ProfilePage() {
 
       <Paper elevation={3} sx={{ mt: 2, p: 2 }}>
         <Typography>Reviews: {reviewsCount}</Typography>
-        <Typography>Visited: {vistedCount}</Typography>
+        <Typography>Visited: {visitedCount}</Typography>
         <Typography>Shortlisted: {shortlistedCount}</Typography>
         <Typography>Favourited: {favouritesCount}</Typography>
         <Typography>Friends: {friendsCount}</Typography>

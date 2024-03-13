@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Grid, Typography, Button } from '@mui/material';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Grid, Typography, Button, TextField} from '@mui/material';
 import MovieSelection from './MovieSelection';
 import ReviewTitle from './ReviewTitle';
 import ReviewBody from './ReviewBody';
@@ -8,53 +9,23 @@ import ReviewRating from './ReviewRating';
 const serverURL = "";
 
 function Review() {
-  const [movies, setMovies] = useState([]);
-  const [selectedMovie, setSelectedMovie] = useState(null);
   const [enteredTitle, setEnteredTitle] = useState('');
   const [enteredReview, setEnteredReview] = useState('');
+
+  const [overallRating, setOverallRating] = useState(0);
+  const [customerServiceRating, setCustomerServiceRating] = useState(0);
+  const [foodQualityRating, setFoodQualityRating] = useState(0);
+  const [atmosphereRating, setAtmosphereRating] = useState(0);
+  const [priceRating, setPriceRating] = useState(0);
+  const [cost, setCost] = useState('');
+  const [photo, setPhoto] = useState(null);
+
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState({});
-  
-  // State variables for different ratings
-  const [customerServiceRating, setCustomerServiceRating] = useState('');
-  const [atmosphereRating, setAtmosphereRating] = useState('');
-  const [priceRating, setPriceRating] = useState('');
 
-  React.useEffect(() => {
-    loadMovies();
-  }, []);
-
-  const loadMovies = () => {
-    callApiLoadMovies()
-      .then(res => {
-        console.log("callApiLoadMovies returned: ", res)
-        var parsed = JSON.parse(res.express);
-        console.log("callApiLoadMovies parsed: ", parsed);
-        setMovies(parsed);
-      })
-  }
-
-  const callApiLoadMovies = async () => {
-    const url = serverURL + "/api/getMovies";
-    console.log(url);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log("User settings: ", body);
-    return body;
-  }
-
-  const handleMovieChange = (movie) => {
-    setSelectedMovie(movie);
-    setErrors((prevErrors) => ({ ...prevErrors, selectedMovie: false }));
-    setShowConfirmation(false);
-  };
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { restaurantID, restaurantName } = location.state || {};
 
   const handleTitleChange = (event) => {
     setEnteredTitle(event.target.value);
@@ -68,9 +39,19 @@ function Review() {
     setShowConfirmation(false);
   };
 
-  // Event handlers for rating changes
+  const handleOverallRatingChange = (event) => {
+    setOverallRating(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, customerServiceRating: false }));
+    setShowConfirmation(false);
+  };
+
   const handleCustomerServiceRatingChange = (event) => {
     setCustomerServiceRating(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, customerServiceRating: false }));
+    setShowConfirmation(false);
+  };
+  const handleFoodQualityRatingChange = (event) => {
+    setFoodQualityRating(event.target.value);
     setErrors((prevErrors) => ({ ...prevErrors, customerServiceRating: false }));
     setShowConfirmation(false);
   };
@@ -87,14 +68,22 @@ function Review() {
     setShowConfirmation(false);
   };
 
-  const handleSubmit = () => {
+  const handleCostChange = (event) => {
+    setCost(event.target.value);
+    setErrors((prevErrors) => ({ ...prevErrors, priceRating: false }));
+    setShowConfirmation(false);
+  };
+
+  const handlePhotoChange = (event) => {
+    setPhoto(event.target.files[0]); 
+    setErrors((prevErrors) => ({ ...prevErrors, photo: false }));
+    setShowConfirmation(false);
+  };
+
+  const handleSubmit = async () => {
     let hasErrors = false;
     const newErrors = {};
 
-    if (!selectedMovie) {
-      newErrors.selectedMovie = true;
-      hasErrors = true;
-    }
     if (!enteredTitle) {
       newErrors.enteredTitle = true;
       hasErrors = true;
@@ -115,66 +104,80 @@ function Review() {
       newErrors.priceRating = true;
       hasErrors = true;
     }
+    if (!overallRating) {
+      newErrors.overallRating = true;
+      hasErrors = true;
+    }
+    if (!foodQualityRating) {
+      newErrors.foodQualityRating = true;
+      hasErrors = true;
+    }
+    if (!cost) {
+      newErrors.cost = true;
+      hasErrors = true;
+    }
+    if (photo === null) {
+      newErrors.photo = false;
+      hasErrors = false;
+    }
 
-    if (hasErrors) {
-      setErrors(newErrors);
-      setShowConfirmation(false);
-    } else {
-      // Prepare the review data to send to the server
-      const reviewData = {
-        userID: 1,
-        movieID: selectedMovie.id,
-        reviewTitle: enteredTitle,
-        reviewContent: enteredReview,
-        customerServiceRating: customerServiceRating,
-        atmosphereRating: atmosphereRating,
-        priceRating: priceRating
+    if (!hasErrors) {
+      const reviewData = new FormData();
+      reviewData.append('userID', 1);
+      reviewData.append('restaurantID', restaurantID);
+      reviewData.append('reviewTitle', enteredTitle);
+      reviewData.append('reviewContent', enteredReview);
+      reviewData.append('overallRating', overallRating);
+      reviewData.append('customerServiceRating', customerServiceRating);
+      reviewData.append('foodQualityRating', foodQualityRating);
+      reviewData.append('atmosphereRating', atmosphereRating);
+      reviewData.append('priceRating', priceRating);
+      reviewData.append('cost', cost);
+      if (photo) reviewData.append('photo', photo);
+  
+      try {
+        const response = await fetch(`${serverURL}/api/addRestaurantReview`, {
+          method: "POST",
+          body: reviewData,
+        });
+  
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const body = await response.json();
+        console.log("Review submission response: ", body);
+
+        // if review has been written
+        const submittedReview = {
+          restaurantName: restaurantName,
+          reviewTitle: enteredTitle,
+          reviewContent: enteredReview,
+          overallRating: overallRating,
+          customerServiceRating: customerServiceRating,
+          foodQualityRating: foodQualityRating,
+          atmosphereRating: atmosphereRating,
+          priceRating: priceRating,
+          cost: cost,
+          photo: photo ? URL.createObjectURL(photo) : null
       };
 
-      // Send the review data to the server using POST request
-      callApiAddReview(reviewData)
-        .then(res => {
-          console.log("callApiAddReview response: ", res);
-          setShowConfirmation(true);
-          setErrors({});
-        })
-        .catch(error => {
-          console.error("Error adding review:", error.message);
-          // Handle any error that occurred during the review submission
-        });
+      let existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
+      existingReviews.push(submittedReview);
+
+      localStorage.setItem('restaurantReviews', JSON.stringify(existingReviews));
+
+      setShowConfirmation(true);
+
+      } catch (error) {
+        console.error("Error submitting review:", error);
+      }
     }
-  };
-
-  const callApiAddReview = async (reviewData) => {
-    const url = serverURL + "/api/addReview";
-    console.log("Sending review data to:", url);
-
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(reviewData),
-    });
-
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    return body;
   };
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography variant="h3">Review a Restaurant</Typography>
+         <Typography variant="h3">Review {restaurantName}</Typography>
       </Grid>
-      <Grid item xs={12}>
-        <MovieSelection
-          movies={movies}
-          selectedMovie={selectedMovie}
-          handleMovieChange={handleMovieChange}
-        />
-        {errors.selectedMovie && <Typography color="red">Select your restaurant</Typography>}
-      </Grid>
+
       <Grid item xs={12}>
         <ReviewTitle enteredTitle={enteredTitle} handleTitleChange={handleTitleChange} />
         {errors.enteredTitle && <Typography color="red">Enter your review title</Typography>}
@@ -184,19 +187,58 @@ function Review() {
         {errors.enteredReview && <Typography color="red">Enter your review</Typography>}
       </Grid>
       <Grid item xs={12}>
+        <Typography variant="h6">Overall Experience</Typography>
+        <ReviewRating selectedRating={overallRating} handleRatingChange={handleOverallRatingChange} />
+        {errors.overallRating && <Typography color="red">Select overall experience rating</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6">Food Quality</Typography>
+        <ReviewRating selectedRating={foodQualityRating} handleRatingChange={handleFoodQualityRatingChange} />
+        {errors.foodQualityRating && <Typography color="red">Select food quality rating</Typography>}
+      </Grid>
+      <Grid item xs={12}>
         <Typography variant="h6">Customer Service</Typography>
         <ReviewRating selectedRating={customerServiceRating} handleRatingChange={handleCustomerServiceRatingChange} />
-        {errors.customerServiceRating && <Typography color="red">Select the rating</Typography>}
+        {errors.customerServiceRating && <Typography color="red">Select customer service rating</Typography>}
       </Grid>
       <Grid item xs={12}>
         <Typography variant="h6">Atmosphere</Typography>
         <ReviewRating selectedRating={atmosphereRating} handleRatingChange={handleAtmosphereRatingChange} />
-        {errors.atmosphereRating && <Typography color="red">Select the rating</Typography>}
+        {errors.atmosphereRating && <Typography color="red">Select atmosphere rating</Typography>}
       </Grid>
       <Grid item xs={12}>
         <Typography variant="h6">Price</Typography>
         <ReviewRating selectedRating={priceRating} handleRatingChange={handlePriceRatingChange} />
-        {errors.priceRating && <Typography color="red">Select the rating</Typography>}
+        {errors.priceRating && <Typography color="red">Select price rating</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          label="Cost of Your Order ($)"
+          type="text"
+          InputLabelProps={{
+          shrink: true,
+          }}
+          variant="outlined"
+          fullWidth
+          value={cost}
+          onChange={(e) => setCost(e.target.value)}
+        />
+        {errors.cost && <Typography color="red">Please enter cost of your order</Typography>}
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="body2" style={{ marginBottom: '8px' }}>Upload photo of your experience (Optional)</Typography>
+        <Button
+          variant="contained"
+          component="label"
+        >
+          Upload Photo
+          <input
+            type="file"
+            hidden
+            onChange={handlePhotoChange}
+          />
+        </Button>
+        {photo && <Typography style={{ marginTop: '8px' }}>{photo.name}</Typography>}
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
@@ -206,12 +248,15 @@ function Review() {
       {showConfirmation && (
         <Grid item xs={12}>
           <Typography variant="h6">Your review has been received</Typography>
-          <Typography variant="subtitle1">Movie: {selectedMovie.name}</Typography>
+          <Typography variant="subtitle1">Restaurant Name: {restaurantID}</Typography>
           <Typography variant="subtitle1">Review Title: {enteredTitle}</Typography>
           <Typography variant="subtitle1">Review Body: {enteredReview}</Typography>
+          <Typography variant="subtitle1">Overall Experience Rating: {overallRating}</Typography>
+          <Typography variant="subtitle1">Food Quality Rating: {foodQualityRating}</Typography>
           <Typography variant="subtitle1">Customer Service Rating: {customerServiceRating}</Typography>
           <Typography variant="subtitle1">Atmosphere Rating: {atmosphereRating}</Typography>
           <Typography variant="subtitle1">Price Rating: {priceRating}</Typography>
+          <Typography variant="subtitle1">Cost of Food: {cost}</Typography>
         </Grid>
       )}
     </Grid>

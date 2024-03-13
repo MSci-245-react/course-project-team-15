@@ -1,33 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
 
 function BeenToList() {
   const navigate = useNavigate();
-  const [beenToRestaurants, setBeenToRestaurants] = useState([
-    {
-      id: '1',
-      name: 'Pasta Paradise',
-      address: '123 Noodle Street, Carb City',
-    },
-    {
-      id: '2',
-      name: 'Sushi Summit',
-      address: '789 Roll Ave, Fish Town',
-    },
-  ]);
+  const [beenToRestaurants, setBeenToRestaurants] = useState([]);
 
-  const handleDelete = (restaurantId) => {
-    console.log(`Delete review ${restaurantId}`);
+  React.useEffect(() => {
+    fetchBeenToRestaurants();
+  }, []);
+
+  const fetchBeenToRestaurants = async () => {
+    const beenToRestaurantIds = JSON.parse(localStorage.getItem('beenToRestaurants') || '[]');
+    const fetchedRestaurants = [];
+    
+    for (const id of beenToRestaurantIds) {
+      try {
+        const response = await fetch(`/api/restaurants/${id}`);
+        const data = await response.json();
+        fetchedRestaurants.push({ id, name: data.Name, address: data.FullAddress });
+      } catch (error) {
+        console.error("Error fetching restaurant details:", error);
+      }
+    }
+    
+    setBeenToRestaurants(fetchedRestaurants);
   };
 
+  const handleDelete = (restaurantId) => {
+    const updatedBeenToRestaurantIds = JSON.parse(localStorage.getItem('beenToRestaurants') || '[]').filter(id => id !== restaurantId);
+    localStorage.setItem('beenToRestaurants', JSON.stringify(updatedBeenToRestaurantIds));
+    setBeenToRestaurants(beenToRestaurants.filter(restaurant => restaurant.id !== restaurantId));
+  };
+
+  const handleView = (restaurantId) => {
+    navigate(`/restaurant/${restaurantId}`);
+  };
+  
   return (
     <Container maxWidth="md">
       <Typography variant="h4" gutterBottom>Been To</Typography>
       <List>
         {beenToRestaurants.map((restaurant) => (
           <ListItem key={restaurant.id} divider>
-            <ListItemText primary={restaurant.name} secondary={restaurant.address} />
+            <ListItemText primary={restaurant.name} />
+            <Button onClick={() => handleView(restaurant.id)} style={{ marginRight: '8px' }}>View</Button>
             <Button onClick={() => handleDelete(restaurant.id)}>Delete</Button>
           </ListItem>
         ))}
