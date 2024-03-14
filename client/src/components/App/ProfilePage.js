@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 function ProfilePage() {
   const userName = "User's Name";
   const userBio = "A brief bio about the user.";
-  const reviewsCount = 2;
   const friendsCount = 2;
 
+  const [reviewsCount, setReviewsCount] = useState(0);
   const [visitedCount, setVisitedCount] = useState(0);
   const [shortlistedCount, setShortlistedCount] = useState(0);
   const [favouritesCount, setFavouritesCount] = useState(0);
@@ -15,10 +15,12 @@ function ProfilePage() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
+    const reviewsCount = JSON.parse(localStorage.getItem('restaurantReviews') || '[]');
     const beenToRestaurants = JSON.parse(localStorage.getItem('beenToRestaurants') || '[]');
     const shortlistedRestaurants = JSON.parse(localStorage.getItem('shortlistedRestaurants') || '[]');
     const favouriteRestaurants = JSON.parse(localStorage.getItem('favouriteRestaurants') || '[]');
     
+    setReviewsCount(reviewsCount.length);
     setVisitedCount(beenToRestaurants.length);
     setShortlistedCount(shortlistedRestaurants.length);
     setFavouritesCount(favouriteRestaurants.length);

@@ -4,6 +4,7 @@ import { Grid, Typography, Button, TextField} from '@mui/material';
 import ReviewTitle from './ReviewTitle';
 import ReviewBody from './ReviewBody';
 import ReviewRating from './ReviewRating';
+import { v4 as uuidv4 } from 'uuid';
 
 const serverURL = "";
 
@@ -81,17 +82,6 @@ function Review() {
   };
 
   React.useEffect(() => {
-    // if (isEditing) {
-    //   setEnteredTitle(reviewData.reviewTitle);
-    //   setEnteredReview(reviewData.reviewContent);
-    //   setOverallRating(reviewData.overallRating);
-    //   setCustomerServiceRating(reviewData.customerServiceRating);
-    //   setFoodQualityRating(reviewData.foodQualityRating);
-    //   setAtmosphereRating(reviewData.atmosphereRating);
-    //   setPriceRating(reviewData.priceRating);
-    //   setCost(reviewData.cost);
-    //   setPhoto(reviewData.photo);
-    // }
   }, [reviewData, isEditing]);
 
   const handleSubmit = async () => {
@@ -171,12 +161,32 @@ function Review() {
         const body = await response.json();
         console.log("Review submission response: ", body);
 
-        if(body.success) {
+        const saveReview = (reviewData) => {
           const existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
-          const updatedReview = { ...body, restaurantID, reviewTitle: enteredTitle, reviewContent: enteredReview, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, priceRating, cost };
-          const newReviews = existingReviews.filter(review => review.reviewId !== body.reviewId);
-          newReviews.push(updatedReview);
-          localStorage.setItem('restaurantReviews', JSON.stringify(newReviews));
+          const reviewIndex = existingReviews.findIndex(review => review.reviewId === reviewData.reviewId);
+          if (reviewIndex !== -1) {
+            existingReviews[reviewIndex] = reviewData;
+          } else {
+            reviewData.reviewId = uuidv4();
+            existingReviews.push(reviewData);
+          }
+          localStorage.setItem('restaurantReviews', JSON.stringify(existingReviews));
+        };
+
+        if(body.success) {
+          const reviewData = {
+            reviewId: uuidv4(),
+            restaurantID: restaurantID,
+            restaurantName: restaurantName,
+            reviewContent: enteredReview,
+            overallRating: overallRating,
+            customerServiceRating: customerServiceRating,
+            foodQualityRating: foodQualityRating,
+            atmosphereRating: atmosphereRating,
+            priceRating: priceRating,
+            cost: cost,
+          };
+          saveReview(reviewData)
         }
         
         setShowConfirmation(true);
