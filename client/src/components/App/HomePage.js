@@ -79,6 +79,10 @@ function HomePage() {
     setRating(newValue);
   };
 
+  const handleMapClick = () => {
+    navigate('/Map');
+  };
+
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState([]);
 
@@ -126,10 +130,10 @@ function HomePage() {
           <Typography variant="h3" component="h2" align="center" style={{ fontSize: '24px' }}>
             Discover the best places to eat around the University of Waterloo.
           </Typography>
-          {/* Search Feature */}
+          {/* Search Feature & Map Button */}
           <Grid container justifyContent="center" alignItems="center">
             <Grid item xs={6}>
-              <Box mt={5} mb={2}>
+              <Box mt={4} mb={4}>
                 <TextField
                   label="Search"
                   variant="outlined"
@@ -145,9 +149,15 @@ function HomePage() {
                       </InputAdornment>
                     ),
                   }}
+                  style={{ width: '540px' }}
                 />
               </Box>
             </Grid>
+            <Grid item>
+              <Button variant="outlined" color="primary" onClick={handleMapClick} style={{ height: '56px', width: '150px' }}>
+                View Map
+              </Button>
+             </Grid>
           </Grid>
         </Grid>
       </Grid>
