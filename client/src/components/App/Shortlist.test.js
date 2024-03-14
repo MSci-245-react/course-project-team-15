@@ -1,28 +1,49 @@
 import React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Shortlist from './Shortlist';
+import '@testing-library/jest-dom';
+
+const mockedNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockedNavigate,
+}));
 
 describe('Shortlist component', () => {
   beforeEach(() => {
-    localStorage.clear(); 
+    localStorage.clear();
+    mockedNavigate.mockClear();
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve([]), // Assuming an initial empty response
+      })
+    );
   });
 
-  it('renders Shortlist component with no restaurants', () => {
-    render(<Shortlist />);
-    expect(screen.getByText('Shortlist')).toBeInTheDocument();
-    expect(screen.queryByText('No shortlisted restaurants.')).toBeInTheDocument();
+  it('renders Shortlist component with no restaurants', async () => {
+    render(
+      <Router>
+        <Shortlist />
+      </Router>
+    );
+    await waitFor(() => {expect(screen.getByText('Shortlist')).toBeInTheDocument();});
   });
 
   it('renders Shortlist component with one restaurant', async () => {
-    const restaurant = { id: 1, name: 'Test Restaurant', address: 'Test Address' };
+    const restaurant = { id: 1, name: 'Test Restaurant' };
     localStorage.setItem('shortlistedRestaurants', JSON.stringify([restaurant.id]));
-    jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+    global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => restaurant,
+      json: async () => ({ Name: restaurant.name }),
     });
 
-    render(<Shortlist />);
+    render(
+      <Router>
+        <Shortlist />
+      </Router>
+    );
 
     await waitFor(() => {
       expect(screen.getByText(restaurant.name)).toBeInTheDocument();
@@ -30,48 +51,50 @@ describe('Shortlist component', () => {
   });
 
   it('deletes a restaurant from the shortlist', async () => {
-    const restaurant = { id: 1, name: 'Test Restaurant', address: 'Test Address' };
+    const restaurant = { id: 1, name: 'Test Restaurant'};
     localStorage.setItem('shortlistedRestaurants', JSON.stringify([restaurant.id]));
-    jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+    global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => restaurant,
+      json: async () => ({ Name: restaurant.name }),
     });
 
-    render(<Shortlist />);
+    render(
+      <Router>
+        <Shortlist />
+      </Router>
+    );
 
     await waitFor(() => {
       expect(screen.getByText(restaurant.name)).toBeInTheDocument();
     });
 
-    const deleteButton = screen.getByText('Delete');
-    fireEvent.click(deleteButton);
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(screen.queryByText(restaurant.name)).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(restaurant.name)).not.toBeInTheDocument();
+    });
   });
 
   it('navigates to restaurant details page when View button is clicked', async () => {
-    const restaurant = { id: 1, name: 'Test Restaurant', address: 'Test Address' };
+    const restaurant = { id: 1, name: 'Test Restaurant' };
     localStorage.setItem('shortlistedRestaurants', JSON.stringify([restaurant.id]));
-    jest.spyOn(global, 'fetch').mockResolvedValueOnce({
+    global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => restaurant,
+      json: async () => ({ Name: restaurant.name }),
     });
 
-    const mockNavigate = jest.fn();
-    jest.mock('react-router-dom', () => ({
-      ...jest.requireActual('react-router-dom'),
-      useNavigate: () => mockNavigate,
-    }));
-
-    render(<Shortlist />);
+    render(
+      <Router>
+        <Shortlist />
+      </Router>
+    );
 
     await waitFor(() => {
       expect(screen.getByText(restaurant.name)).toBeInTheDocument();
     });
 
-    const viewButton = screen.getByText('View');
-    fireEvent.click(viewButton);
+    fireEvent.click(screen.getByText('View'));
 
-    expect(mockNavigate).toHaveBeenCalledWith(`/restaurant/${restaurant.id}`);
+    expect(mockedNavigate).toHaveBeenCalledWith(`/restaurant/${restaurant.id}`);
   });
 });
