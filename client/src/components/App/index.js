@@ -15,6 +15,8 @@ import FavouritesList from './FavouritesList';
 import Friends from './Friends';
 import Survey from './Survey';
 import Map from './Map';
+import Expenses from './Expenses';
+import Badges from './Badges';
 
 import CreateAccount from './CreateAccount';
 
@@ -55,6 +57,8 @@ function App() {
         <Route path="/FavouritesList" element={<FavouritesList />} />
         <Route path="/Friends" element={<Friends />} />
         <Route path="/Map" element={<Map />} />
+        <Route path="/Expenses" element={<Expenses />} />
+        <Route path="/Badges" element={<Badges />} />
 
         <Route path="/CreateAccount" element={<CreateAccount />} />
         </Routes>

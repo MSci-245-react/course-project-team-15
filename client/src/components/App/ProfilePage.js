@@ -6,6 +6,8 @@ function ProfilePage() {
   const userName = "User's Name";
   const userBio = "A brief bio about the user.";
   const friendsCount = 2;
+  const expensesConut = 3;
+  const badgesCount = 4;
 
   const [reviewsCount, setReviewsCount] = useState(0);
   const [visitedCount, setVisitedCount] = useState(0);
@@ -46,7 +48,8 @@ function ProfilePage() {
         <Typography>Shortlisted: {shortlistedCount}</Typography>
         <Typography>Favourited: {favouritesCount}</Typography>
         <Typography>Friends: {friendsCount}</Typography>
-        
+        <Typography>Expenses: {expensesConut}</Typography>
+        <Typography>Badges: {badgesCount}</Typography>
       </Paper>
 
       {/* All Lists */}
@@ -55,6 +58,8 @@ function ProfilePage() {
       <Button onClick={() => navigate('/Shortlist')}>Shortlist</Button>
       <Button onClick={() => navigate('/FavouritesList')}>Favourites</Button>
       <Button onClick={() => navigate('/friends')}>My Friends</Button>
+      <Button onClick={() => navigate('/Expenses')}>My Expenses</Button>
+      <Button onClick={() => navigate('/Badges')}>My Badges</Button>
     </Container>
   );
 }
