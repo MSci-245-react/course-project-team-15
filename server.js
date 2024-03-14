@@ -47,7 +47,7 @@ app.post('/api/survey', (req, res) => {
 app.get('/api/restaurants', (req, res) => {
     let connection = mysql.createConnection(config);
 
-    const sql = `SELECT Name as name, Description as description, Fulladdress, AverageRating as rating, FeaturedImage, Price, Categories, id FROM Restaurants`;
+    const sql = `SELECT Name as name, Description as description, Fulladdress, AverageRating as rating, FeaturedImage, Price, Categories, Latitude, Longitude, id FROM Restaurants`;
 
     connection.query(sql, (error, results) => {
         if (error) {
@@ -63,7 +63,7 @@ app.get('/api/restaurants/:id', (req, res) => {
     let connection = mysql.createConnection(config);
     const { id } = req.params; // Extract `id` from URL parameters
 
-    const sql = `SELECT Name, Description, Categories, About, Fulladdress, AverageRating as rating, Website, Price, OpeningHours, FeaturedImage, id FROM Restaurants WHERE id = ?`;
+    const sql = `SELECT Name, Description, Categories, About, Fulladdress, AverageRating as rating, Latitude, Longitude, Website, Price, OpeningHours, FeaturedImage, id FROM Restaurants WHERE id = ?`;
 
     connection.query(sql, [id], (error, results) => { 
         if (error) {

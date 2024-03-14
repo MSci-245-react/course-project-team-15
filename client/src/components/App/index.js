@@ -14,6 +14,7 @@ import Shortlist from './Shortlist';
 import FavouritesList from './FavouritesList';
 import Friends from './Friends';
 import Survey from './Survey';
+import Map from './Map';
 
 import CreateAccount from './CreateAccount';
 
@@ -53,6 +54,7 @@ function App() {
         <Route path="/Shortlist" element={<Shortlist />} />
         <Route path="/FavouritesList" element={<FavouritesList />} />
         <Route path="/Friends" element={<Friends />} />
+        <Route path="/Map" element={<Map />} />
 
         <Route path="/CreateAccount" element={<CreateAccount />} />
         </Routes>
