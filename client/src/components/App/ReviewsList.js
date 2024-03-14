@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
 
 function ReviewsList() {
@@ -7,37 +7,37 @@ function ReviewsList() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const loadedReviews = JSON.parse(localStorage.getItem('reviews')) || [];
+    const loadedReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
     setReviews(loadedReviews);
   }, []);
 
-  const handleEditReview = (index) => {
-    const reviewToEdit = reviews[index];
-    navigate('/review', { state: { reviewData: { ...reviewToEdit, index } } });
+  const handleEditReview = (reviewId) => {
+    const reviewToEdit = reviews.find(review => review.reviewId === reviewId);
+    navigate('/review', { state: {reviewData: reviewToEdit, restaurantName: reviewToEdit.restaurantName} });
   };
 
-  const handleDeleteReview = (index) => {
-    let reviews = JSON.parse(localStorage.getItem('reviews'));
-    reviews.splice(index, 1);
-    localStorage.setItem('reviews', JSON.stringify(reviews));
-    setReviews(reviews);
+  const handleDeleteReview = (reviewId) => {
+    let updatedReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
+    updatedReviews = updatedReviews.filter(review => review.reviewId !== reviewId);
+    localStorage.setItem('restaurantReviews', JSON.stringify(updatedReviews));
+    setReviews(updatedReviews);
   };
 
   return (
     <Container maxWidth="md">
       <Typography variant="h4" gutterBottom>My Reviews</Typography>
       <List>
-        {reviews.map((review, index) => (
-          <ListItem key={index} alignItems="flex-start" divider>
+        {reviews.map((review) => (
+          <ListItem key={review.reviewId} alignItems="flex-start" divider>
             <ListItemText
               primary={review.restaurantName}
               secondary={
                 <>
                   <Typography component="span" variant="body2" color="text.primary">
-                    {review.address}
+                    {review.reviewTitle} - {review.reviewContent} - {review.overallRating} stars
                   </Typography>
-                  <Button onClick={() => handleEditReview(index)}>Edit</Button>
-                  <Button onClick={() => handleDeleteReview(index)}>Delete</Button>
+                  <Button onClick={() => handleEditReview(review.reviewId)}>Edit</Button>
+                  <Button onClick={() => handleDeleteReview(review.reviewId)}>Delete</Button>
                 </>
               }
             />
