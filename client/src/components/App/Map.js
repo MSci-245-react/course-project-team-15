@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Container, Typography } from '@mui/material';
+import { Container, Typography, Button } from '@mui/material';
 import pinIcon from './../../assets/images/pin.png';
 
 function Map() {
     const [restaurants, setRestaurants] = useState([]);
+    const [reviews, setReviews] = useState([]); 
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         loadRestaurants();
@@ -15,9 +17,9 @@ function Map() {
 
     const customIcon = new L.Icon({
         iconUrl: pinIcon,
-        iconSize: [25, 41], // Size of the icon
-        iconAnchor: [12, 41], // Point of the icon which will correspond to marker's location
-        popupAnchor: [1, -34], // Point from which the popup should open relative to the iconAnchor
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
     });
 
     const loadRestaurants = async () => {
@@ -40,6 +42,20 @@ function Map() {
         }
     };
 
+    const handleRestaurantClick = (id) => {
+        navigate(`/restaurant/${id}`);
+    };
+
+      React.useEffect(() => {
+        const loadedReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
+        setReviews(loadedReviews);
+  }, []);
+
+    const handleReviewClick = (reviewId) => {
+        const reviewToEdit = reviews.find(review => review.reviewId === reviewId);
+        navigate('/review', { state: {reviewData: reviewToEdit, restaurantName: reviewToEdit.restaurantName} });
+      };
+
     return (
         <Container maxWidth="lg">
         <Typography variant="h4" gutterBottom>
@@ -57,8 +73,21 @@ function Map() {
                     icon={customIcon}
                 >
                     <Popup>
-                        {restaurant.name}<br />
-                        {restaurant.description}
+                        <Typography>{restaurant.name}</Typography>
+                        <Typography>{restaurant.description}</Typography>
+                        <Button 
+                            variant="contained" 
+                            color="primary" 
+                            onClick={() => handleRestaurantClick(restaurant.id)}
+                            style={{ marginTop: '10px' }}
+                            >
+                            More Detail
+                        </Button>
+                        {restaurant.hasReview && (
+                        <Button variant="contained" color="secondary" onClick={() => handleReviewClick(restaurant.id)} style={{ marginTop: '10px', marginLeft: '10px' }}>
+                            View Review
+                        </Button>
+                        )}
                     </Popup>
                 </Marker>
             ))}
