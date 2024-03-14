@@ -10,6 +10,8 @@ function ProfilePage() {
   const vistedCount = 0;
   const shortlistedCount = 0;
   const favouritesCount = 0;
+  const expensesCount = 0;
+  const badgesCount = 0;
 
   const navigate = useNavigate();
 
@@ -33,7 +35,8 @@ function ProfilePage() {
         <Typography>Shortlisted: {shortlistedCount}</Typography>
         <Typography>Favourited: {favouritesCount}</Typography>
         <Typography>Friends: {friendsCount}</Typography>
-        
+        <Typography>Expenses: {expensesCount}</Typography>
+        <Typography>Badges: {badgesCount}</Typography>
       </Paper>
 
       {/* All Lists */}
@@ -42,6 +45,8 @@ function ProfilePage() {
       <Button onClick={() => navigate('/Shortlist')}>Shortlist</Button>
       <Button onClick={() => navigate('/FavouritesList')}>Favourites</Button>
       <Button onClick={() => navigate('/friends')}>My Friends</Button>
+      <Button onClick={() => navigate('/Expenses')}>Expenses</Button>
+      <Button onClick={() => navigate('/Badges')}>Badges</Button>
     </Container>
   );
 }

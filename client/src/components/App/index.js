@@ -14,6 +14,8 @@ import Shortlist from './Shortlist';
 import FavouritesList from './FavouritesList';
 import Friends from './Friends';
 import Survey from './Survey';
+import Expenses from './Expenses';
+import Badges from './Badges';
 
 import CreateAccount from './CreateAccount';
 
