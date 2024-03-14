@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Grid, Typography, Button, TextField} from '@mui/material';
-import MovieSelection from './MovieSelection';
 import ReviewTitle from './ReviewTitle';
 import ReviewBody from './ReviewBody';
 import ReviewRating from './ReviewRating';
@@ -9,23 +8,24 @@ import ReviewRating from './ReviewRating';
 const serverURL = "";
 
 function Review() {
-  const [enteredTitle, setEnteredTitle] = useState('');
-  const [enteredReview, setEnteredReview] = useState('');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { restaurantID, restaurantName, reviewData} = location.state || {};
 
-  const [overallRating, setOverallRating] = useState(0);
-  const [customerServiceRating, setCustomerServiceRating] = useState(0);
-  const [foodQualityRating, setFoodQualityRating] = useState(0);
-  const [atmosphereRating, setAtmosphereRating] = useState(0);
-  const [priceRating, setPriceRating] = useState(0);
-  const [cost, setCost] = useState('');
+  const [enteredTitle, setEnteredTitle] = useState(reviewData?.reviewTitle || '');
+  const [enteredReview, setEnteredReview] = useState(reviewData?.reviewContent || '');
+  const [overallRating, setOverallRating] = useState(reviewData?.overallRating || 0);
+  const [customerServiceRating, setCustomerServiceRating] = useState(reviewData?.customerServiceRating || 0);
+  const [foodQualityRating, setFoodQualityRating] = useState(reviewData?.foodQualityRating || 0);
+  const [atmosphereRating, setAtmosphereRating] = useState(reviewData?.atmosphereRating || 0);
+  const [priceRating, setPriceRating] = useState(reviewData?.priceRating || 0);
+  const [cost, setCost] = useState(reviewData?.cost || '');
   const [photo, setPhoto] = useState(null);
+
+  const isEditing = !!reviewData;
 
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { restaurantID, restaurantName } = location.state || {};
 
   const handleTitleChange = (event) => {
     setEnteredTitle(event.target.value);
@@ -80,6 +80,20 @@ function Review() {
     setShowConfirmation(false);
   };
 
+  React.useEffect(() => {
+    // if (isEditing) {
+    //   setEnteredTitle(reviewData.reviewTitle);
+    //   setEnteredReview(reviewData.reviewContent);
+    //   setOverallRating(reviewData.overallRating);
+    //   setCustomerServiceRating(reviewData.customerServiceRating);
+    //   setFoodQualityRating(reviewData.foodQualityRating);
+    //   setAtmosphereRating(reviewData.atmosphereRating);
+    //   setPriceRating(reviewData.priceRating);
+    //   setCost(reviewData.cost);
+    //   setPhoto(reviewData.photo);
+    // }
+  }, [reviewData, isEditing]);
+
   const handleSubmit = async () => {
     let hasErrors = false;
     const newErrors = {};
@@ -133,11 +147,23 @@ function Review() {
       reviewData.append('atmosphereRating', atmosphereRating);
       reviewData.append('priceRating', priceRating);
       reviewData.append('cost', cost);
+
       if (photo) reviewData.append('photo', photo);
+
+      const isEditingMode = isEditing; 
+      const reviewId = reviewData?.id; 
+
+      let endpoint = `${serverURL}/api/addRestaurantReview`;
+      let method = "POST";
+  
+      if (isEditingMode && reviewId) {
+        endpoint = `${serverURL}/api/editReview/${reviewId}`;
+        method = "PUT";
+      }
   
       try {
-        const response = await fetch(`${serverURL}/api/addRestaurantReview`, {
-          method: "POST",
+        const response = await fetch(endpoint, {
+          method: method,
           body: reviewData,
         });
   
@@ -145,26 +171,16 @@ function Review() {
         const body = await response.json();
         console.log("Review submission response: ", body);
 
-        // if review has been written
-        const submittedReview = {
-          restaurantName: restaurantName,
-          reviewTitle: enteredTitle,
-          reviewContent: enteredReview,
-          overallRating: overallRating,
-          customerServiceRating: customerServiceRating,
-          foodQualityRating: foodQualityRating,
-          atmosphereRating: atmosphereRating,
-          priceRating: priceRating,
-          cost: cost,
-          photo: photo ? URL.createObjectURL(photo) : null
-      };
-
-      let existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
-      existingReviews.push(submittedReview);
-
-      localStorage.setItem('restaurantReviews', JSON.stringify(existingReviews));
-
-      setShowConfirmation(true);
+        if(body.success) {
+          const existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
+          const updatedReview = { ...body, restaurantID, reviewTitle: enteredTitle, reviewContent: enteredReview, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, priceRating, cost };
+          const newReviews = existingReviews.filter(review => review.reviewId !== body.reviewId);
+          newReviews.push(updatedReview);
+          localStorage.setItem('restaurantReviews', JSON.stringify(newReviews));
+        }
+        
+        setShowConfirmation(true);
+        navigate(`/restaurant/${restaurantID}`);
 
       } catch (error) {
         console.error("Error submitting review:", error);
@@ -175,7 +191,7 @@ function Review() {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-         <Typography variant="h3">Review {restaurantName}</Typography>
+        <Typography variant="h3">{isEditing ? `Edit Review for ${restaurantName}` : `Review ${restaurantName}`}</Typography>
       </Grid>
 
       <Grid item xs={12}>
@@ -242,7 +258,7 @@ function Review() {
       </Grid>
       <Grid item xs={12}>
         <Button variant="contained" color="primary" onClick={handleSubmit}>
-          Submit
+          Submit Review
         </Button>
       </Grid>
       {showConfirmation && (
