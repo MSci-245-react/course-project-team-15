@@ -1,9 +1,21 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import HomePage from './HomePage';
 import '@testing-library/jest-dom';
+import fetchMock from 'jest-fetch-mock';
 
+fetchMock.enableMocks();
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}));
+
+beforeEach(() => {
+  fetch.resetMocks(); 
+  fetch.mockResponseOnce(JSON.stringify([{ id: 1, name: 'Test Restaurant 1', description: 'A great place', FeaturedImage: 'url/to/image', rating: 4, Price: '$', Categories: 'Italian, Pizza'}]));
+});
 
 describe('HomePage', () => {
   test('renders search input', () => {
@@ -37,9 +49,9 @@ describe('HomePage', () => {
           <HomePage />
         </Router>
       );
-    const lowCheckbox = screen.getByLabelText(/low/i);
-    const mediumCheckbox = screen.getByLabelText(/medium/i);
-    const highCheckbox = screen.getByLabelText(/high/i);
+    const lowCheckbox = screen.getByRole('checkbox', { name: "$" });
+    const mediumCheckbox = screen.getByRole('checkbox', { name: "$$" });
+    const highCheckbox = screen.getByRole('checkbox', { name: "$$$" });
     expect(lowCheckbox).toBeInTheDocument();
     expect(mediumCheckbox).toBeInTheDocument();
     expect(highCheckbox).toBeInTheDocument();
@@ -51,9 +63,9 @@ describe('HomePage', () => {
           <HomePage />
         </Router>
       );
-    const vegetarianCheckbox = screen.getByLabelText(/vegetarian friendly/i);
-    const veganCheckbox = screen.getByLabelText(/vegan options/i);
-    const glutenFreeCheckbox = screen.getByLabelText(/gluten-free options/i);
+    const vegetarianCheckbox = screen.getByLabelText(/vegetarian/i);
+    const veganCheckbox = screen.getByLabelText(/vegan/i);
+    const glutenFreeCheckbox = screen.getByLabelText(/gluten-free/i);
     expect(vegetarianCheckbox).toBeInTheDocument();
     expect(veganCheckbox).toBeInTheDocument();
     expect(glutenFreeCheckbox).toBeInTheDocument();
@@ -87,13 +99,27 @@ describe('HomePage', () => {
     expect(ratingStars).toHaveLength(6); 
   });
 
-  test('renders apply filters button', () => {
+  test('navigates to map page on "View Map" button click', () => {
     render(
-        <Router>
-          <HomePage />
-        </Router>
-      );
-    const applyFiltersButton = screen.getByRole('button', { name: /apply filters/i });
-    expect(applyFiltersButton).toBeInTheDocument();
+      <Router>
+        <HomePage />
+      </Router>
+    );
+    const mapButton = screen.getByRole('button', { name: /View Map/i });
+    expect(mapButton).toBeInTheDocument();
+  });
+
+  test('displays restaurants matching the search term', async () => {
+    render(
+      <Router>
+        <HomePage />
+      </Router>
+    );
+
+    const searchInput = screen.getByLabelText('Search');
+    fireEvent.change(searchInput, { target: { value: 'Test' } });
+
+    const displayedRestaurant = await screen.findByText('Test Restaurant 1');
+    expect(displayedRestaurant).toBeInTheDocument();
   });
 });
