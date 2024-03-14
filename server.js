@@ -99,26 +99,34 @@ app.post('/api/addRestaurantReview', upload.single('photo'), (req, res) => {
   connection.end();
 });
 
-// app.post('/api/addReview', (req, res) => {
-// 	const { userID, movieID, reviewTitle, reviewContent, reviewScore } = req.body;
+// update restaurant review table when edit it
+app.put('/api/editReview/:reviewId', upload.single('photo'), (req, res) => {
+  const { reviewId } = req.params;
+  const {userID, restaurantID, reviewTitle, reviewContent, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, priceRating, cost} = req.body;
 
-// 	let connection = mysql.createConnection(config);
+  const photoURL = req.file ? req.file.path : null;
 
-// 	const sql = `INSERT INTO Review (userID, movieID, reviewTitle, reviewContent, reviewScore) 
-// 				 VALUES (?, ?, ?, ?, ?)`;
+  const sql = `UPDATE RestaurantReviews SET reviewTitle = ?, reviewContent = ?, overallRating = ?, customerServiceRating = ?, foodQualityRating = ?, 
+  atmosphereRating = ?, valueForMoneyRating = ?, cost = ? ${photoURL ? ', photoURL = ?' : ''} WHERE id = ?`;
 
-// 	const data = [userID, movieID, reviewTitle, reviewContent, reviewScore];
+  const data = [reviewTitle, reviewContent, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, priceRating, cost];
 
-// 	connection.query(sql, data, (error, results, fields) => {
-// 		if (error) {
-// 			console.error("Error adding review:", error.message);
-// 			return res.status(500).json({ error: "Error adding review to the database" });
-// 		}
+  if (photoURL) {
+    data.push(photoURL);
+  }
 
-// 		return res.status(200).json({ success: true });
-// 	});
-// 	connection.end();
-// });
+  data.push(reviewId);
 
+  let connection = mysql.createConnection(config);
+  connection.query(sql, data, (error, results) => {
+      if (error) {
+          console.error("Error updating restaurant review:", error.message);
+          return res.status(500).json({ error: "Error updating restaurant review in the database" });
+      }
+
+      return res.status(200).json({ success: true, message: "Restaurant review successfully updated" });
+  });
+  connection.end();
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version

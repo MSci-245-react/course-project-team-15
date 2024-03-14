@@ -30,23 +30,28 @@ function RestaurantPage() {
     };
 
     fetchRestaurantDetails();
+  }, [id]);
 
-    // trying to save the review on page
-    const existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
-    const reviewWritten = existingReviews.some(review => review.restaurantID === id);
-    setIsReviewWritten(reviewWritten);
+  React.useEffect(() => {
+    const checkReviews = () => {
+      const existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
+      const reviewWritten = existingReviews.some(review => String(review.restaurantID) === String(id));
+      setIsReviewWritten(reviewWritten);
+    };
 
+    checkReviews();
   }, [id]);
 
   const navigate = useNavigate();
   const handleWriteReview = () => {
     const existingReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
-    const reviewToEdit = existingReviews.find(review => review.restaurantID.toString() === id);
+    const reviewToEdit = existingReviews.find(review => String(review.restaurantID) === String(id));
 
     navigate(`/review`, { state: { 
-      restaurantID: restaurantDetails.id, 
+      restaurantID: id, 
       restaurantName: restaurantDetails.Name,
-      reviewData: reviewToEdit } });
+      reviewData: reviewToEdit
+    }});
   };
 
   const [beenTo, setBeenTo] = useState(false);
@@ -98,7 +103,7 @@ function RestaurantPage() {
     if (isFavourite) {
       updatedFavouriteRestaurants = favouriteRestaurants.filter(r => r !== id);
     } else {
-      updatedFavouriteRestaurants = [...new Set([...favouriteRestaurants, id])]; // Prevent duplicates
+      updatedFavouriteRestaurants = [...new Set([...favouriteRestaurants, id])];
     }
     localStorage.setItem('favouriteRestaurants', JSON.stringify(updatedFavouriteRestaurants));
     setIsFavourite(!isFavourite);
@@ -126,7 +131,7 @@ function RestaurantPage() {
       <Typography variant="h6">Opening Hours: {restaurantDetails.OpeningHours}</Typography>
       
       <Box sx={{ '& > :not(style)': { m: 1 } }}>
-      <Button onClick={handleWriteReview} variant="outlined" color="primary"> {isReviewWritten ? "Edit Review" : "Write a Review"}</Button>
+      <Button onClick={handleWriteReview} variant="outlined" color={isReviewWritten ? "secondary" : "primary"}>{isReviewWritten ? "Edit Review" : "Write a Review"}</Button>
       <Button onClick={handleBeenToClick} variant="outlined" color={beenTo ? "secondary" : "primary"}>{beenTo ? "Visited" : "Been To"}</Button>
       <Button onClick={handleShortlistClick} variant="outlined" color={shortlist ? "secondary" : "primary"}>{shortlist ? "Shortlisted" : "Shortlist"}</Button>
       <Button onClick={handleFavouriteClick} variant="outlined" color={isFavourite ? "secondary" : "primary"}>{isFavourite ? "Favourite" : "Add to Favourites"}</Button>
