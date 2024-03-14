@@ -3,13 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { Container, Typography, Button } from '@mui/material';
+import { Container, Typography, TextField, Button } from '@mui/material';
 import pinIcon from './../../assets/images/pin.png';
 
 function Map() {
     const [restaurants, setRestaurants] = useState([]);
-    const [reviews, setReviews] = useState([]); 
     const navigate = useNavigate();
+
+    const [searchText, setSearchText] = useState('');
+    const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+    const [mapCenter, setMapCenter] = useState([]);
 
     React.useEffect(() => {
         loadRestaurants();
@@ -37,6 +40,7 @@ function Map() {
             const data = await response.json();
             console.log('Fetched Restaurants:', data);
             setRestaurants(data);
+            setFilteredRestaurants(data);
         } catch (error) {
             console.error("Failed to load restaurants: ", error);
         }
@@ -46,27 +50,34 @@ function Map() {
         navigate(`/restaurant/${id}`);
     };
 
-      React.useEffect(() => {
-        const loadedReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
-        setReviews(loadedReviews);
-  }, []);
-
-    const handleReviewClick = (reviewId) => {
-        const reviewToEdit = reviews.find(review => review.reviewId === reviewId);
-        navigate('/review', { state: {reviewData: reviewToEdit, restaurantName: reviewToEdit.restaurantName} });
-      };
-
+    const handleSearch = () => {
+        const matchedRestaurants = restaurants.filter(restaurant =>
+            restaurant.Street.toLowerCase().includes(searchText.toLowerCase()) ||
+            restaurant.name.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setFilteredRestaurants(matchedRestaurants);
+        if (matchedRestaurants.length > 0) {
+            setMapCenter([matchedRestaurants[0].Latitude, matchedRestaurants[0].Longitude]);
+        }
+    };
     return (
         <Container maxWidth="lg">
-        <Typography variant="h4" gutterBottom>
-            Restaurants in Waterloo
-        </Typography>
-        <MapContainer center={[43.4723, -80.5449]} zoom={13} style={{ height: "650px", width: "100%" }}>
+            <Typography variant="h4" gutterBottom>Find Restaurant</Typography>
+            <TextField 
+                label="Search by Address or Name" 
+                variant="outlined" 
+                fullWidth 
+                value={searchText} 
+                onChange={(e) => setSearchText(e.target.value)} 
+                style={{ marginBottom: '10px' }}
+            />
+        <Button variant="contained" color="primary" onClick={handleSearch} style={{ marginBottom: '20px' }}>Search</Button>
+        <MapContainer center={[43.4723, -80.5449]} zoom={13} style={{ height: "600px", width: "100%" }}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-            {restaurants.map((restaurant) => (
+            {filteredRestaurants.map((restaurant) => (
                 <Marker
                     key={restaurant.id}
                     position={[restaurant.Latitude, restaurant.Longitude]}
@@ -83,11 +94,6 @@ function Map() {
                             >
                             More Detail
                         </Button>
-                        {restaurant.hasReview && (
-                        <Button variant="contained" color="secondary" onClick={() => handleReviewClick(restaurant.id)} style={{ marginTop: '10px', marginLeft: '10px' }}>
-                            View Review
-                        </Button>
-                        )}
                     </Popup>
                 </Marker>
             ))}
