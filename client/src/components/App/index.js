@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
+import axios from 'axios'; // Import axios for HTTP requests
 
 import HomePage from './HomePage';
 import FeedPage from './FeedPage';
@@ -39,6 +40,15 @@ function App() {
     }
   };
 
+  const handleLikeReview = async (reviewId) => {
+    try {
+      const response = await axios.post(`/api/likeReview/${reviewId}`);
+      console.log(response.data); 
+    } catch (error) {
+      console.error('Error liking review:', error);
+    }
+  };
+
   return (
     <Router>
       <AppBar position="static">
@@ -57,7 +67,7 @@ function App() {
         <Routes>
           <Route path="/survey" element={<Survey onSurveyComplete={handleSurveyComplete} />} />
           <Route path="/" element={<HomePage />} />
-          <Route path="/FeedPage" element={<FeedPage />} />
+          <Route path="/FeedPage" element={<FeedPage onLikeReview={handleLikeReview} />} /> {/* Pass handleLikeReview function to FeedPage */}
           <Route path="/Recommendations" element={<Recommendations />} />
           <Route path="/ProfilePage" element={<ProfilePage />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
