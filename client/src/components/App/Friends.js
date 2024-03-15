@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@mui/material';
 import { unfollowUser } from './api'; 
+
+const serverURL = "";
+
 function Friends() {
   const [followedUsers, setFollowedUsers] = useState([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchFollowedUsers();
   }, []);
 

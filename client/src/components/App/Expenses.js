@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid } from '@mui/material';
 
+const serverURL = "";
+
 const Expenses = () => {
   const [totalSpent, setTotalSpent] = useState(0);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchExpenses = async () => {
       try {
         const response = await fetch(`${serverURL}/api/getTotalExpenses`, {
@@ -13,7 +15,7 @@ const Expenses = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            userID: getCurrentUserID(), 
+            userID: 1, 
           }),
         });
 
