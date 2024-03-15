@@ -129,4 +129,75 @@ app.put('/api/editReview/:reviewId', upload.single('photo'), (req, res) => {
   connection.end();
 });
 
+app.get('/api/trendingRestaurants', (req, res) => {
+  let connection = mysql.createConnection(config);
+
+  const sql = `
+    SELECT
+      r.id,
+      r.Name,
+      r.Description,
+      r.Categories,
+      r.About,
+      r.Fulladdress,
+      r.AverageRating AS rating,
+      r.Latitude,
+      r.Longitude,
+      r.Website,
+      r.Price,
+      r.OpeningHours,
+      r.FeaturedImage
+    FROM
+      Restaurants r
+    LEFT JOIN
+      RestaurantReviews rr ON r.id = rr.restaurantID
+    GROUP BY
+      r.id
+    ORDER BY
+      rating DESC,
+      r.id DESC
+    LIMIT 10;`;
+
+  connection.query(sql, (error, results) => {
+    if (error) {
+      return console.error(error.message);
+    }
+    res.json(results);
+  });
+  connection.end();
+});
+
+
+// API to get recent reviews from the database
+app.get('/api/recentReviews', (req, res) => {
+  let connection = mysql.createConnection(config);
+
+  // Query to fetch recent reviews
+  const sql = `
+      SELECT
+          rr.*,
+          r.name AS restaurantName,
+          u.username AS reviewerUsername
+      FROM
+          RestaurantReviews rr
+      JOIN
+          Restaurants r ON rr.restaurantID = r.id
+      JOIN
+          Users u ON rr.userID = u.UserID
+      ORDER BY
+          rr.id DESC
+      LIMIT 10;`;
+
+  connection.query(sql, (error, results) => {
+      if (error) {
+          console.error(error.message);
+          return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.json(results);
+  });
+  connection.end();
+});
+
+
+
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
