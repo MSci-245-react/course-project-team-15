@@ -1,32 +1,40 @@
-import React from 'react';
-import { Container, Typography, List, ListItem, ListItemText, ListItemAvatar, Avatar, Button} from '@mui/material';
-
+import React, { useState, useEffect } from 'react';
+import { Button } from '@mui/material';
+import { unfollowUser } from './api'; 
 function Friends() {
-  const friendsList = [
-    { id: 1, name: 'John Doe', profilePic: '/path/to/johndoe.jpg'},
-    { id: 2, name: 'Jane Smith', profilePic: '/path/to/janesmith.jpg'},
-  ];
+  const [followedUsers, setFollowedUsers] = useState([]);
 
-  const handleUnfollow = (friendId) => {
-    console.log("Unfollow", friendId);
+  useEffect(() => {
+    fetchFollowedUsers();
+  }, []);
+
+  const fetchFollowedUsers = async () => {
+    const response = await fetch('/api/followedUsers');
+    const data = await response.json();
+    setFollowedUsers(data);
+  };
+
+  const handleUnfollow = async (userId) => {
+    const response = await unfollowUser(userId);
+    if (response.success) {
+      setFollowedUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+    } else {
+      console.error('Failed to unfollow user');
+    }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Typography variant="h4" gutterBottom>My Friends</Typography>
-      <List>
-        {friendsList.map((friend) => (
-          <ListItem key={friend.id} secondaryAction={
-            <Button onClick={() => handleUnfollow(friend.id)} color="primary">Unfollow</Button>
-          }>
-            <ListItemAvatar>
-              <Avatar src={friend.profilePic} alt={friend.name} />
-            </ListItemAvatar>
-            <ListItemText primary={friend.name} />
-          </ListItem>
+    <div>
+      <h2>Friends</h2>
+      <ul>
+        {followedUsers.map(user => (
+          <li key={user.id}>
+            {user.name}
+            <Button onClick={() => handleUnfollow(user.id)}>Unfollow</Button>
+          </li>
         ))}
-      </List>
-    </Container>
+      </ul>
+    </div>
   );
 }
 
