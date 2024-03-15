@@ -152,8 +152,8 @@ function Review() {
       }
   
       try {
-        const response = await fetch(endpoint, {
-          method: method,
+        const response = await fetch(`${serverURL}/api/addRestaurantReview`, {
+          method: 'POST',
           body: reviewData,
         });
   
@@ -172,6 +172,43 @@ function Review() {
           }
           localStorage.setItem('restaurantReviews', JSON.stringify(existingReviews));
         };
+
+        const pointsResponse = await fetch(`${serverURL}/api/awardPoints`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userID: getCurrentUserID(), 
+          }),
+        });
+
+        if (!pointsResponse.ok) {
+          console.error('Failed to award points');
+        }
+
+        setShowConfirmation(true);
+        navigate(`/restaurant/${restaurantID}`);
+
+        const expensesResponse = await fetch(`${serverURL}/api/getTotalExpenses`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userID: getCurrentUserID(), // Obtain the user ID of the currently logged-in user
+          }),
+        });
+  
+        if (!expensesResponse.ok) {
+          console.error('Failed to fetch expenses');
+        }
+  
+        const expensesData = await expensesResponse.json();
+        setTotalSpent(expensesData.totalExpenses);
+  
+        setShowConfirmation(true);
+        navigate(`/restaurant/${restaurantID}`);
 
         if(body.success) {
           const reviewData = {
