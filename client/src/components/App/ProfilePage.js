@@ -8,7 +8,7 @@ function ProfilePage() {
   const friendsCount = 2;
   const expensesConut = 3;
   const badgesCount = 4;
-  const followCount = 5;
+  // const followCount = 5;
 
   const [reviewsCount, setReviewsCount] = useState(0);
   const [visitedCount, setVisitedCount] = useState(0);
@@ -51,7 +51,7 @@ function ProfilePage() {
         <Typography>Friends: {friendsCount}</Typography>
         <Typography>Expenses: {expensesConut}</Typography>
         <Typography>Badges: {badgesCount}</Typography>
-        <Typography>Follow People: {followCount}</Typography>
+        {/* <Typography>Follow People: {followCount}</Typography> */}
       </Paper>
 
       {/* All Lists */}

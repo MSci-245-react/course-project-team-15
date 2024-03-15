@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Grid, Button } from '@mui/material';
 
+const serverURL = "";
+
 const Follow = () => {
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    // Fetch the list of users from the server
+  React.useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch(`${serverURL}/api/getUsers`);
@@ -24,14 +25,13 @@ const Follow = () => {
 
   const handleFollow = async (userID) => {
     try {
-      // Send a request to the server to follow the user with the given userID
       const response = await fetch(`${serverURL}/api/followUser`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userID: getCurrentUserID(), // Obtain the user ID of the currently logged-in user
+          userID: 1,
           followUserID: userID,
         }),
       });
@@ -40,7 +40,6 @@ const Follow = () => {
         throw new Error('Failed to follow user');
       }
 
-      // Update the state to remove the followed user from the list
       setUsers((prevUsers) => prevUsers.filter((user) => user.userID !== userID));
     } catch (error) {
       console.error('Error following user:', error);

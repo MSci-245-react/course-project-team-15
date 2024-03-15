@@ -28,6 +28,8 @@ function Review() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const [totalSpent, setTotalSpent] = useState(0);
+
   const handleTitleChange = (event) => {
     setEnteredTitle(event.target.value);
     setErrors((prevErrors) => ({ ...prevErrors, enteredTitle: false }));
@@ -152,8 +154,8 @@ function Review() {
       }
   
       try {
-        const response = await fetch(`${serverURL}/api/addRestaurantReview`, {
-          method: 'POST',
+        const response = await fetch(endpoint, {
+          method: method,
           body: reviewData,
         });
   
@@ -173,42 +175,33 @@ function Review() {
           localStorage.setItem('restaurantReviews', JSON.stringify(existingReviews));
         };
 
-        const pointsResponse = await fetch(`${serverURL}/api/awardPoints`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userID: getCurrentUserID(), 
-          }),
-        });
+        // const pointsResponse = await fetch(`${serverURL}/api/awardPoints`, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify({
+        //     userID: 1, 
+        //   }),
+        // });
+        // if (!pointsResponse.ok) {
+        //   console.error('Failed to award points');
+        // }
 
-        if (!pointsResponse.ok) {
-          console.error('Failed to award points');
-        }
-
-        setShowConfirmation(true);
-        navigate(`/restaurant/${restaurantID}`);
-
-        const expensesResponse = await fetch(`${serverURL}/api/getTotalExpenses`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userID: getCurrentUserID(), // Obtain the user ID of the currently logged-in user
-          }),
-        });
-  
-        if (!expensesResponse.ok) {
-          console.error('Failed to fetch expenses');
-        }
-  
-        const expensesData = await expensesResponse.json();
-        setTotalSpent(expensesData.totalExpenses);
-  
-        setShowConfirmation(true);
-        navigate(`/restaurant/${restaurantID}`);
+        // const expensesResponse = await fetch(`${serverURL}/api/getTotalExpenses`, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   body: JSON.stringify({
+        //     userID: 1,
+        //   }),
+        // });
+        // if (!expensesResponse.ok) {
+        //   console.error('Failed to fetch expenses');
+        // }
+        // const expensesData = await expensesResponse.json();
+        // setTotalSpent(expensesData.totalExpenses);
 
         if(body.success) {
           const reviewData = {

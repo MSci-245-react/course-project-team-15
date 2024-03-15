@@ -44,7 +44,7 @@ function App() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link to="/" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }}>TasteOfLoo</Link>
+            <Link component={Link} to="/" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }}>TasteOfLoo</Link>
           </Typography>
           <Button color="inherit" component={Link} to="/FeedPage">Feed</Button>
           <Button color="inherit" component={Link} to="/Recommendations">Recommendations</Button>

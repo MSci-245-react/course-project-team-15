@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
 
-const serverURL = "http://ec2-3-137-65-169.us-east-2.compute.amazonaws.com"; 
+const serverURL = "";
 
-function PointsDisplay() {
+function Badges() {
   const [points, setPoints] = useState(0);
 
   const fetchUserPoints = async () => {
@@ -32,4 +32,4 @@ function PointsDisplay() {
   );
 }
 
-export default PointsDisplay;
+export default Badges;
