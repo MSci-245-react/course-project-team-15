@@ -198,6 +198,61 @@ app.get('/api/recentReviews', (req, res) => {
   connection.end();
 });
 
+// API to get followed users from the database
+app.get('/api/followedUsers', (req, res) => {
+  let connection = mysql.createConnection(config);
 
+  const sql = `SELECT UserID AS id FROM Users`;
+
+  connection.query(sql, (error, results) => {
+      if (error) {
+          console.error(error.message);
+          return res.status(500).json({ error: 'Internal server error' });
+      }
+      res.json(results);
+  });
+  connection.end();
+});
+
+// API to like a review
+app.post('/api/likeReview/:reviewId', (req, res) => {
+  const { reviewId: id } = req.params; // Rename reviewId to id
+
+  const connection = mysql.createConnection(config);
+
+  const sql = `UPDATE RestaurantReviews SET likes = likes + 1 WHERE id = ?`;
+
+  connection.query(sql, [id], (error, results) => {
+    connection.end();
+
+    if (error) {
+      console.error('Error liking review:', error.message);
+      return res.status(500).json({ error: 'Error liking review' });
+    }
+
+    return res.status(200).json({ success: true, likes: results.changedRows });
+  });
+});
+
+// API to comment on a review
+app.post('/api/commentReview/:reviewId', (req, res) => {
+  const { reviewId } = req.params;
+  const { text } = req.body;
+
+  const connection = mysql.createConnection(config);
+
+  const sql = `INSERT INTO ReviewComments (reviewId, text) VALUES (?, ?)`;
+
+  connection.query(sql, [reviewId, text], (error, results) => {
+    connection.end();
+
+    if (error) {
+      console.error('Error commenting on review:', error.message);
+      return res.status(500).json({ error: 'Error commenting on review' });
+    }
+
+    return res.status(200).json({ success: true, message: 'Comment added successfully' });
+  });
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
