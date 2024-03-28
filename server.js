@@ -241,9 +241,9 @@ app.post('/api/commentReview/:reviewId', (req, res) => {
 
   const connection = mysql.createConnection(config);
 
-  const sql = `INSERT INTO ReviewComments (reviewId, text) VALUES (?, ?)`;
+  const sql = `INSERT INTO ReviewComments (reviewID, text) VALUES (?, ?)`;
 
-  connection.query(sql, [reviewId, text], (error, results) => {
+  connection.query(sql, [parseInt(reviewId), text], (error, results) => {
     connection.end();
 
     if (error) {
@@ -254,5 +254,26 @@ app.post('/api/commentReview/:reviewId', (req, res) => {
     return res.status(200).json({ success: true, message: 'Comment added successfully' });
   });
 });
+
+// API to get comments for a specific review
+app.get('/api/comments/:reviewId', (req, res) => {
+  const { reviewId } = req.params;
+
+  const connection = mysql.createConnection(config);
+
+  const sql = `SELECT * FROM ReviewComments WHERE reviewID = ?`;
+
+  connection.query(sql, [parseInt(reviewId)], (error, results) => {
+    connection.end();
+
+    if (error) {
+      console.error('Error fetching comments:', error.message);
+      return res.status(500).json({ error: 'Error fetching comments' });
+    }
+
+    return res.status(200).json(results);
+  });
+});
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version

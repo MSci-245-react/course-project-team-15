@@ -38,19 +38,26 @@ function FeedPage() {
     try {
       const response = await axios.get('/api/recentReviews');
       const reviewsData = response.data;
-      
-      setRecentReviews(reviewsData);
-      
+
+      // Fetch comments for each review
+      const reviewsWithComments = await Promise.all(reviewsData.map(async (review) => {
+        const commentsResponse = await axios.get(`/api/comments/${review.id}`);
+        const comments = commentsResponse.data;
+        return { ...review, comments };
+      }));
+
+      setRecentReviews(reviewsWithComments);
+
       // Initialize like counts based on data from backend
       const initialLikeCounts = {};
-      reviewsData.forEach((review) => {
+      reviewsWithComments.forEach((review) => {
         initialLikeCounts[review.id] = review.likes;
       });
       setLikeCounts(initialLikeCounts);
-      
+
       // Initialize comment texts
       const initialCommentTexts = {};
-      reviewsData.forEach((review) => {
+      reviewsWithComments.forEach((review) => {
         initialCommentTexts[review.id] = '';
       });
       setCommentTexts(initialCommentTexts);
@@ -58,7 +65,9 @@ function FeedPage() {
       console.error('Error loading recent reviews:', error);
     }
   };
-  
+
+
+
 
   const loadFollowedUsers = async () => {
     try {
@@ -103,7 +112,7 @@ function FeedPage() {
     try {
       // Send a POST request to the backend to like the review
       await axios.post(`/api/likeReview/${reviewId}`);
-      
+
       // Increment the like count in the state by 1
       setLikeCounts(prevLikeCounts => ({
         ...prevLikeCounts,
@@ -113,16 +122,18 @@ function FeedPage() {
       console.error('Error liking review:', error);
     }
   };
-  
-  
-  
-  
 
   const handleComment = async (e, reviewId) => {
     e.preventDefault();
+    console.log('Review ID:', reviewId);
+    console.log('Comment Text:', commentTexts[reviewId]); // Log the comment text
     try {
       await axios.post(`/api/commentReview/${reviewId}`, { text: commentTexts[reviewId] });
-      loadRecentReviews();
+
+      // After successfully adding the comment, reload recent reviews to display the updated data
+      await loadRecentReviews();
+
+      // Clear the comment text for the current review after adding the comment
       setCommentTexts(prevCommentTexts => ({
         ...prevCommentTexts,
         [reviewId]: ''
@@ -131,6 +142,7 @@ function FeedPage() {
       console.error('Error commenting on review:', error);
     }
   };
+
 
   return (
     <Container maxWidth="xl" style={{ padding: 0 }}>
@@ -206,111 +218,119 @@ function FeedPage() {
               </Select>
             </FormControl>
           )}
-          </Box>
         </Box>
-  
-        <Grid container spacing={3} style={{ padding: '20px' }}>
-          <Grid item xs={12} md={6} style={{ borderRight: '1px solid #ccc', paddingRight: '30px' }}>
-            <Typography variant="h3" component="h2" align="center">
-              Trending Restaurants
-            </Typography>
-            <Divider style={{ margin: '10px 0' }} />
-            <Grid container spacing={3}>
-              {trendingRestaurants
-                .filter((restaurant) => (
-                  (filterRating === 0 || restaurant.rating >= filterRating) &&
-                  (!filterCuisine || restaurant.Categories.toLowerCase().includes(filterCuisine.toLowerCase()))
-                ))
-                .map((restaurant) => (
-                  <Grid item xs={6} key={restaurant.id}>
-                    <Card onClick={() => handleCardClick(restaurant.id)} style={{ cursor: 'pointer' }}>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        image={restaurant.FeaturedImage}
-                        alt={restaurant.Name}
-                      />
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {restaurant.Name}
+      </Box>
+
+      <Grid container spacing={3} style={{ padding: '20px' }}>
+        <Grid item xs={12} md={6} style={{ borderRight: '1px solid #ccc', paddingRight: '30px' }}>
+          <Typography variant="h3" component="h2" align="center">
+            Trending Restaurants
+          </Typography>
+          <Divider style={{ margin: '10px 0' }} />
+          <Grid container spacing={3}>
+            {trendingRestaurants
+              .filter((restaurant) => (
+                (filterRating === 0 || restaurant.rating >= filterRating) &&
+                (!filterCuisine || restaurant.Categories.toLowerCase().includes(filterCuisine.toLowerCase()))
+              ))
+              .map((restaurant) => (
+                <Grid item xs={6} key={restaurant.id}>
+                  <Card onClick={() => handleCardClick(restaurant.id)} style={{ cursor: 'pointer' }}>
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      image={restaurant.FeaturedImage}
+                      alt={restaurant.Name}
+                    />
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {restaurant.Name}
+                      </Typography>
+                      <Box display="flex" alignItems="center" my={2}>
+                        <Rating name="read-only" value={restaurant.rating || 0} readOnly />
+                        <Typography variant="subtitle1" ml={1}>
+                          {restaurant.rating ? restaurant.rating.toFixed(1) : 'N/A'}
                         </Typography>
-                        <Box display="flex" alignItems="center" my={2}>
-                          <Rating name="read-only" value={restaurant.rating || 0} readOnly />
-                          <Typography variant="subtitle1" ml={1}>
-                            {restaurant.rating ? restaurant.rating.toFixed(1) : 'N/A'}
-                          </Typography>
-                        </Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {restaurant.Description}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-            </Grid>
-          </Grid>
-  
-          <Grid item xs={12} md={6} style={{ paddingLeft: '30px' }}>
-            <Typography variant="h3" component="h2" align="center">
-              Recent Reviews
-            </Typography>
-            <Divider style={{ margin: '10px 0' }} />
-            <Grid container spacing={3}>
-              {recentReviews
-                .filter((review) => (
-                  (!filterFollowedUsers || followedUserIds.includes(review.userId)) &&
-                  (filterRating === 0 || review.overallRating >= filterRating)
-                ))
-                .sort((a, b) => (sortByLikes ? b.likes - a.likes : 0))
-                .map((review) => (
-                  <Grid item xs={12} key={review.id}>
-                    <Card>
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {review.reviewTitle}
-                        </Typography>
-                        <Rating name="read-only" value={review.overallRating || 0} readOnly />
-                        <Typography variant="body2" color="text.secondary" style={{ maxHeight: '3.6em', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {review.reviewContent}
-                        </Typography>
-                        <Box mt={2} display="flex" alignItems="center">
-                          <form onSubmit={(e) => handleComment(e, review.id)} style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
-                            <TextField
-                              value={commentTexts[review.id]}
-                              onChange={(e) => setCommentTexts(prevCommentTexts => ({
-                                ...prevCommentTexts,
-                                [review.id]: e.target.value
-                              }))}
-                              variant="standard"
-                              margin="dense"
-                              required
-                              fullWidth
-                              id={`comment-${review.id}`}
-                              label="Add a comment"
-                              name={`comment-${review.id}`}
-                              size="small"
-                            />
-                            <IconButton type="submit" color="primary" style={{ marginBottom: '-25px' }}>
-                              <CommentIcon />
-                            </IconButton>
-                            <IconButton color="primary" onClick={() => handleLike(review.id)} style={{ marginBottom: '-25px', marginLeft: '200px' }}>
-                              <ThumbUpAltIcon />
-                            </IconButton>
-                            <Typography variant="body1">{likeCounts[review.id]}</Typography>
-                          </form>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-            </Grid>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {restaurant.Description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
           </Grid>
         </Grid>
-  
-        <Divider style={{ margin: '30px auto', width: '80%' }} />
-      </Container>
-    );
-  }
-  
-  export default FeedPage;
-  
+
+        <Grid item xs={12} md={6} style={{ paddingLeft: '30px' }}>
+          <Typography variant="h3" component="h2" align="center">
+            Recent Reviews
+          </Typography>
+          <Divider style={{ margin: '10px 0' }} />
+          <Grid container spacing={3}>
+            {recentReviews
+              .filter((review) => (
+                (!filterFollowedUsers || followedUserIds.includes(review.userId)) &&
+                (filterRating === 0 || review.overallRating >= filterRating)
+              ))
+              .sort((a, b) => (sortByLikes ? b.likes - a.likes : 0))
+              .map((review) => (
+                <Grid item xs={12} key={review.id}>
+                  <Card>
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="div">
+                        {review.reviewTitle}
+                      </Typography>
+                      <Rating name="read-only" value={review.overallRating || 0} readOnly />
+                      <Typography variant="body2" color="text.secondary" style={{ maxHeight: '3.6em', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {review.reviewContent}
+                      </Typography>
+
+                      {/* Comment Text Field Section */}
+                      <Box display="flex" alignItems="center">
+                        <form onSubmit={(e) => handleComment(e, review.id)} style={{ display: 'flex', alignItems: 'center', marginLeft: '10px', width: '100%' }}>
+                          <TextField
+                            value={commentTexts[review.id]}
+                            onChange={(e) => setCommentTexts(prevCommentTexts => ({ ...prevCommentTexts, [review.id]: e.target.value }))}
+                            variant="standard"
+                            margin="dense"
+                            required
+                            fullWidth
+                            id={`comment-${review.id}`}
+                            label="Add a comment"
+                            name={`comment-${review.id}`}
+                            size="small"
+                          />
+                          <IconButton type="submit" color="primary" style={{ marginBottom: '-25px' }}>
+                            <CommentIcon />
+                          </IconButton>
+                          <IconButton color="primary" onClick={() => handleLike(review.id)} style={{ marginBottom: '-25px', marginLeft: '200px' }}>
+                            <ThumbUpAltIcon />
+                          </IconButton>
+                          <Typography variant="body1">{likeCounts[review.id]}</Typography>
+                        </form>
+                      </Box>
+
+                      {/* Comment Section */}
+                      <Box mt={2} mb={1}>
+                        <Typography variant="h7">Comments:</Typography>
+                        {review.comments && review.comments.map((comment, index) => (
+                          <Typography key={index} style={{ fontSize: '0.8rem', marginTop: '5px' }}>{comment.text}</Typography>
+                        ))}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+
+              ))}
+
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Divider style={{ margin: '30px auto', width: '80%' }} />
+    </Container>
+  );
+}
+
+export default FeedPage;
