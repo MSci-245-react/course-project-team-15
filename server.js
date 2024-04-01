@@ -77,12 +77,22 @@ app.get('/api/restaurants/:id', (req, res) => {
 // API to add a restaurant review to the database
 // app.use('/uploads', express.static('uploads'));
 const upload = multer({ dest: 'uploads/' }); 
+// API to add a restaurant review to the database
 app.post('/api/addRestaurantReview', upload.single('photo'), (req, res) => {
   let connection = mysql.createConnection(config);
 
   const { userID, restaurantID, reviewTitle, reviewContent, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, priceRating, cost } = req.body;
   const photoURL = req.file ? req.file.path : null;
-  // console.log("Photo URL:", photoURL);
+  
+  // Increment ReviewCount for the user making the review
+  const updateUserReviewCount = `UPDATE Users SET ReviewCount = ReviewCount + 1 WHERE UserID = ?`;
+
+  connection.query(updateUserReviewCount, [userID], (error, results) => {
+    if (error) {
+      console.error("Error updating user review count:", error.message);
+      return res.status(500).json({ error: "Error updating user review count in the database" });
+    }
+  });
 
   const sql = `INSERT INTO RestaurantReviews (userID, restaurantID, reviewTitle, reviewContent, overallRating, customerServiceRating, foodQualityRating, atmosphereRating, valueForMoneyRating, cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
@@ -98,6 +108,7 @@ app.post('/api/addRestaurantReview', upload.single('photo'), (req, res) => {
   });
   connection.end();
 });
+
 
 // update restaurant review table when edit it
 app.put('/api/editReview/:reviewId', upload.single('photo'), (req, res) => {
@@ -274,6 +285,43 @@ app.get('/api/comments/:reviewId', (req, res) => {
     return res.status(200).json(results);
   });
 });
+
+app.get('/api/user/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  // Create a single connection to the database
+  const connection = mysql.createConnection(config);
+
+  // Check if userId is null or not a number
+  if (userId === null || isNaN(userId)) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
+
+  // Query to fetch UserID, ReviewCount, and BadgeLevel for the specified user
+  const sql = `SELECT UserID, ReviewCount FROM Users WHERE UserID = ?`;
+
+  // Execute the query
+  connection.query(sql, [userId], (error, results) => {
+    // Close the connection after the query is executed
+    connection.end();
+
+    if (error) {
+      console.error('Error fetching user data:', error.message);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    // Check if user data was found
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return the user data
+    const userData = results[0];
+    res.json(userData);
+  });
+});
+
+
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
