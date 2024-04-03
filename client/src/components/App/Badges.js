@@ -1,27 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
-import BadgeIcon from '@mui/icons-material/Star'; // Import the badge icon from MUI
+import LocalPoliceIcon from '@mui/icons-material/LocalPolice'; // Import the LocalPolice icon from MUI
 import { useLocation } from 'react-router-dom'; // Import useLocation hook
 
-// Define a mapping of badge levels to badge icons
+// Define a new mapping of badge levels to LocalPoliceIcon with different colors
 const badgeIcons = {
-  1: <BadgeIcon color="primary" />,
-  2: <BadgeIcon color="secondary" />,
-  3: <BadgeIcon color="error" />,
-  4: <BadgeIcon color="action" />,
-  5: <BadgeIcon color="info" />,
-  6: <BadgeIcon color="success" />,
-  7: <BadgeIcon color="warning" />,
-  8: <BadgeIcon color="primary" />,
-  9: <BadgeIcon color="secondary" />,
-  10: <BadgeIcon color="error" />,
-  11: <BadgeIcon color="action" />,
+  1: <LocalPoliceIcon style={{ fontSize: 100, color: "#e91e63" }} />, // Pink
+  2: <LocalPoliceIcon style={{ fontSize: 100, color: "#9c27b0" }} />, // Purple
+  3: <LocalPoliceIcon style={{ fontSize: 100, color: "#673ab7" }} />, // Deep Purple
+  4: <LocalPoliceIcon style={{ fontSize: 100, color: "#3f51b5" }} />, // Indigo
+  5: <LocalPoliceIcon style={{ fontSize: 100, color: "#2196f3" }} />, // Blue
+  6: <LocalPoliceIcon style={{ fontSize: 100, color: "#03a9f4" }} />, // Light Blue
+  7: <LocalPoliceIcon style={{ fontSize: 100, color: "#00bcd4" }} />, // Cyan
+  8: <LocalPoliceIcon style={{ fontSize: 100, color: "#009688" }} />, // Teal
+  9: <LocalPoliceIcon style={{ fontSize: 100, color: "#4caf50" }} />, // Green
+  10: <LocalPoliceIcon style={{ fontSize: 100, color: "#ffeb3b" }} />, // Yellow
+  11: <LocalPoliceIcon style={{ fontSize: 100, color: "#ff9800" }} />, // Orange
 };
 
 function Badges() {
-  const location = useLocation(); // Use useLocation hook to get current location
-  const searchParams = new URLSearchParams(location.search); // Get URL search parameters
-  const userId = searchParams.get('userId'); // Extract userId from URL parameters
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const userId = searchParams.get('userId');
 
   const [reviewCount, setReviewCount] = useState(0);
   const [badges, setBadges] = useState([]);
@@ -39,13 +39,13 @@ function Badges() {
         determineBadges(data.ReviewCount);
       })
       .catch(error => console.error('Error fetching review count:', error));
-  }, [userId]); // Fetch data whenever userId changes
+  }, [userId]);
 
   const determineBadges = (count) => {
     const badgesEarned = [];
     for (let i = 1; i <= 11; i++) {
       if (count >= i * 10) {
-        badgesEarned.push({ label: `Badge ${i}: ${i * 10} reviews`, level: i });
+        badgesEarned.push({ label: `Badge ${i}`, level: i });
       }
     }
     setBadges(badgesEarned);
@@ -53,13 +53,21 @@ function Badges() {
 
   return (
     <div>
-      <Typography variant="h5">Your Badges</Typography>
-      {badges.map((badge, index) => (
-        <div key={index}>
-          {badgeIcons[badge.level]} {/* Render the badge icon based on the badge level */}
-          <Typography variant="body1">{badge.label}</Typography>
-        </div>
-      ))}
+      <Typography variant="h3" style={{ marginTop: '15px', marginBottom: '20px' }}>Your Badges</Typography>
+      <Typography variant="h5" style={{ marginBottom: '5px' }}>
+        Earn reward badges by reviewing and rating restaurants.
+      </Typography>
+      <Typography variant="h5" style={{ marginBottom: '40px' }}>
+        A new badge will be earned for every 10 reviews.
+      </Typography>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '60px' }}>
+        {badges.map((badge, index) => (
+          <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {badgeIcons[badge.level]}
+            <Typography variant="body1">{badge.label}</Typography>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

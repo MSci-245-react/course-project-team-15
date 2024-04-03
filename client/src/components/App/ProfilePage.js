@@ -61,7 +61,7 @@ function ProfilePage() {
       <Button onClick={() => navigate('/FavouritesList')}>Favourites</Button>
       <Button onClick={() => navigate('/friends')}>My Friends</Button>
       <Button onClick={() => navigate('/Expenses')}>My Expenses</Button>
-      <Button onClick={() => navigate('/Badges')}>My Badges</Button>
+      <Button onClick={() => navigate('/Badges?userId=1')}>My Badges</Button>
       <Button onClick={() => navigate('/Follow')}>Follow People</Button>
     </Container>
   );
