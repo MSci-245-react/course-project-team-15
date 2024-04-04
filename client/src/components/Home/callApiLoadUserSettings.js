@@ -1,9 +1,10 @@
-async function callApiLoadUserSettings(serverURL, userID) {
+async function callApiLoadUserSettings(serverURL, userID, idToken) {
   const url = serverURL + "/api/loadUserSettings";
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: idToken,
       },
       body: JSON.stringify({
         userID: userID

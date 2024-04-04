@@ -1,11 +1,14 @@
-import * as React from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+
 
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles'
 import Grid from "@mui/material/Grid";
-import CssBaseline from '@mui/material/CssBaseline';
 import callApiLoadUserSettings from './callApiLoadUserSettings.js';
-const serverURL = "";
+import Button from '@mui/material/Button';
+
+import { FirebaseContext } from '../Firebase';
+const serverURL = '';
 
 
 const theme = createTheme({
@@ -16,63 +19,73 @@ const theme = createTheme({
 
 
 const Home = () => {
+  const [userID, setuserID] = useState(null); // State to hold the user ID
+  const [movies, setMovies] = useState([]);
+  const firebase = useContext(FirebaseContext);
+  const [idToken, setIdToken] = useState('');
 
-  const [userID, setUserID] = React.useState(1);
-  const [mode, setMode] = React.useState(0);
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const user = firebase.auth.currentUser; // Access the current user
+        if (user) {
+          // Get the ID token and UID if the user is signed in
+          const token = await user.getIdToken();
+          setIdToken(token);
+          setuserID(user.uid); // Set the user ID in state
+        }
+      } catch (error) {
+        console.error('Error fetching user details:',
+          error);
+      }
+    };
+    fetchUserDetails();
+  }, [firebase]);
 
-  
-  React.useEffect(() => {
-    //loadUserSettings();
-  }, []);
-  
-  const loadUserSettings = () => {
-    callApiLoadUserSettings(serverURL, userID)
-      .then(res => {
-        //console.log("parsed: ", res[0].mode)
-        setMode(res[0].mode);
+  useEffect(() => {
+    if (idToken) {
+      getMovies();
+    }
+  }, [idToken]);
+
+  const getMovies = () => {
+    if (!userID) {
+      console.error('No user ID available');
+      return;
+    }
+    callApiLoadUserSettings(serverURL, userID, idToken)
+      .then(movies => {
+        setMovies(movies);
+        console.log('Movies received: ', movies);
+      })
+      .catch(error => {
+        console.error('Error loading movies:',
+          error.message);
       });
-  }
+  };
+  const handleSignOut = () => {
+    firebase
+      .doSignOut()
+      .then(() => console.log('Signed out successfully'))
+      .catch(error => console.error('Sign out error:',
+        error));
+  };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-        sx={{ 
-          minHeight: '100vh',
-          marginTop: theme.spacing(8),
-          marginLeft: theme.spacing(4)
-        }}
-      >
+    <>
+      <Grid container>
         <Grid item>
-
-          <Typography
-            variant={"h3"}
-          >
-
-            {mode === 0 ? (
-              <React.Fragment>
-                Welcome to MSci245!
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                Welcome back!
-              </React.Fragment>
-            )}
-
-          </Typography>
-
+          <Typography>Welcome to MSci342!</Typography>
+          <Typography>You are on the Home page.</Typography>
+          <Typography>You have been authenticated with Firebase</Typography>
+        </Grid>
+        <Grid item>
+          <Button onClick={handleSignOut}>Sign Out</Button>
         </Grid>
       </Grid>
-    </ThemeProvider>
+    </>
   );
-}
-
-
+};
 
 
 export default Home;
