@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Grid, Typography, TextField, Button, IconButton, InputAdornment, List, ListItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import axios from 'axios';
+
+const auth = getAuth();
 
 function CreateAccount() {
   const [firstName, setFirstName] = useState('');
@@ -17,8 +21,28 @@ function CreateAccount() {
     'Password must have at least one number',
   ]);
   const [hidePassword, setHidePassword] = useState(true);
+  const [existingUsernames, setExistingUsernames] = useState([]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch existing usernames from the backend API
+    const fetchExistingUsernames = async () => {
+      try {
+        const response = await fetch('/api/existingUsernames');
+        if (response.ok) {
+          const data = await response.json();
+          setExistingUsernames(data);
+        } else {
+          console.error('Failed to fetch existing usernames');
+        }
+      } catch (error) {
+        console.error('Error fetching existing usernames:', error);
+      }
+    };
+
+    fetchExistingUsernames();
+  }, []);
 
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
@@ -31,15 +55,19 @@ function CreateAccount() {
   const handleUsernameChange = (event) => {
     const newUsername = event.target.value;
     setUsername(newUsername);
-
+  
     if (newUsername.length < 3 || newUsername.length > 32) {
       setErrors(['Username must be 3 - 32 characters long']);
-    } else if (existingUsernames.includes(newUsername)) {
-      setErrors(['Username must be unique']);
     } else {
-      setErrors([]);
+      // Check if the new username already exists in the list of existing usernames
+      if (existingUsernames.includes(newUsername)) {
+        setErrors(['Username must be unique']);
+      } else {
+        setErrors([]);
+      }
     }
   };
+  
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -76,39 +104,73 @@ function CreateAccount() {
     return errors;
   };
 
-  const handleSubmit = () => {
+  const callApiRegisterUser = async () => {
+    const url = "/api/register"; // Adjust the URL path according to your API endpoint
+    console.log("Registering user at URL:", url);
+
+    try {
+      const response = await axios.post(url, {
+        username,
+        email,
+        password,
+        firstName,
+        lastName
+      });
+
+      if (response.status !== 200) {
+        throw new Error(response.data.error || "Error registering user");
+      }
+
+      console.log('Successfully registered user');
+      return response.data;
+    } catch (error) {
+      console.error("Error during registration:", error.message);
+      throw error;
+    }
+  };
+
+  const handleSubmit = async () => {
     const errors = handleValidateFields();
     if (errors.length > 0) {
       setErrors(errors);
       return;
     }
-
+  
     if (existingUsernames.includes(username)) {
       setErrors(['Username must be unique']);
       return;
     }
-
+  
     const unmetRequirements = [];
     if (password !== confirmPassword) {
       setErrors(['Passwords do not match']);
       return;
     }
-
+  
     if (!validatePassword(password, unmetRequirements)) {
       setErrors(unmetRequirements);
       return;
     }
-
-    // Here you would handle the submission of the account creation form
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Username:', username);
-    console.log('Password:', password);
-    console.log('Email:', email);
-
-    // Assuming account creation was successful, navigate to the survey page
-    navigate('/Survey');
+  
+    try {
+      // Create a new user account with the provided email and password using Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log('Successfully created Firebase account:', user.uid);
+  
+      // Now, call your backend API to insert the user details into the MySQL database
+      await callApiRegisterUser();
+  
+      // Navigate to the survey page after successful account creation
+      navigate('/Survey');
+    } catch (error) {
+      console.error('Error during account creation:', error.message);
+      setErrors([error.message]);
+    }
   };
+
+
+  
 
   const validatePassword = (password, unmetRequirements) => {
     const minLength = 5;
