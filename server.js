@@ -8,9 +8,17 @@ import bodyParser from 'body-parser';
 import response from 'express';
 import cors from 'cors';
 import multer from 'multer';
+import admin from 'firebase-admin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+import serviceAccount from './serviceAccountKey.json' assert {type: 'json'};
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://msci342-team-15-default-rtdb.firebaseio.com"
+});
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -20,6 +28,21 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(express.static(path.join(__dirname, "client/build")));
+
+// Middleware to verify Firebase ID Token
+const checkAuth = (req, res, next) => {
+  const idToken = req.headers.authorization;
+  if (!idToken) {
+  return res.status(403).send('Unauthorized');
+  }
+  admin.auth().verifyIdToken(idToken)
+  .then(decodedToken => {
+  req.user = decodedToken;
+  next();
+  }).catch(error => {
+  res.status(403).send('Unauthorized');
+  });
+  };
 
 // API to add user survery to the database
 app.post('/api/survey', (req, res) => {

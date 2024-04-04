@@ -99,7 +99,7 @@ function HomePage() {
       .catch(err => console.error("Failed to load restaurants: ", err));
   }
 
-  const callApiLoadRestaurants = async () => {
+  const callApiLoadRestaurants = async (idToken) => {
     const url = "/api/restaurants";
     console.log(url);
 
@@ -107,6 +107,7 @@ function HomePage() {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
+            Authorization: idToken,
         }
     });
     if (response.status !== 200) {

@@ -1,70 +1,83 @@
-import * as React from 'react';
-
+import React, { useState } from 'react';
+import Container from '@mui/material/Container';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 import Typography from "@mui/material/Typography";
-import Paper from '@mui/material/Paper';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles'
 import Grid from "@mui/material/Grid";
+import { withFirebase } from '../Firebase';
+import { useNavigate } from 'react-router-dom';
 
-//import BackgroundImage from "./backgroundImage.jpg"
+const SignIn = ({ firebase }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-const serverURL = "";
+  const onSubmit = async event => {
+    event.preventDefault();
+    setLoading(true);
+    try {
+      await firebase.doSignInWithEmailAndPassword(email, password);
+      navigate('/');
+    } catch (error) {
+      setError(error);
+    }
+    setLoading(false);
+  };
 
-const opacityValue = 0.9;
-
-const lightTheme = createTheme({
-  palette: {
-    type: 'light',
-    background: {
-      default: "#ffffff"
-    },
-    primary: {
-      main: '#ef9a9a',
-      light: '#ffcccb',
-      dark: '#ba6b6c',
-      background: '#eeeeee'
-    },
-    secondary: {
-      main: "#b71c1c",
-      light: '#f05545',
-      dark: '#7f0000'
-    },
-  },
-});
-
-
-const SignIn = () => {
+  const onChange = event => {
+    const { name, value } = event.target;
+    if (name === 'email') setEmail(value);
+    else if (name === 'password') setPassword(value);
+  };
 
   return (
-    <ThemeProvider theme={lightTheme}>
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-        style={{ minHeight: '100vh' }}
-      >
-        <Grid item>
-
-          <Typography
-            variant={"h3"}
-            align="flex-start"
-          >
-
-
-              <React.Fragment>
-                Sign In page
-              </React.Fragment>
-
+    <Grid container>
+      <Grid item>
+        <Container>
+          <Typography>
+            MSci 342 - App with Firebase authentication
           </Typography>
-
-        </Grid>
+          <Typography>
+            You are on the Sign In page.
+          </Typography>
+          <form noValidate onSubmit={onSubmit}>
+            <TextField
+              id="email"
+              name="email"
+              type="email"
+              label="Email"
+              value={email}
+              onChange={onChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+            />
+            <TextField
+              id="password"
+              name="password"
+              type="password"
+              label="Password"
+              value={password}
+              onChange={onChange}
+              fullWidth
+              margin="normal"
+              variant="outlined"
+            />
+            {error && (
+              <Typography color="error">
+                {error.message}
+              </Typography>
+            )}
+            <Button type="submit" variant="contained" color="primary" disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
+            </Button>
+          </form>
+        </Container>
       </Grid>
-    </ThemeProvider>
+    </Grid>
   );
-}
+};
 
-
-
-
-export default SignIn;
+export default withFirebase(SignIn);
