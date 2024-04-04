@@ -345,6 +345,36 @@ app.get('/api/user/:userId', (req, res) => {
 });
 
 
+// API to register a new user
+app.post('/api/register', async (req, res) => {
+  const { username, email, password, firstName, lastName } = req.body;
+
+  // Check if username or email already exists
+  const userExistsQuery = 'SELECT COUNT(*) AS count FROM Users WHERE Username = ? OR Email = ?';
+  let connection = mysql.createConnection(config);
+  connection.query(userExistsQuery, [username, email], (error, results) => {
+    if (error) {
+      console.error('Error checking if user exists:', error.message);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    if (results[0].count > 0) {
+      return res.status(400).json({ error: 'Username or email already exists' });
+    }
+
+    // Insert user information into the Users table
+    const insertUserQuery = 'INSERT INTO Users (Username, Email, Password, FirstName, LastName) VALUES (?, ?, ?, ?, ?)';
+    connection.query(insertUserQuery, [username, email, password, firstName, lastName], (error, results) => {
+      connection.end(); // Close the database connection
+      if (error) {
+        console.error('Error inserting user into database:', error.message);
+        return res.status(500).json({ error: 'Error registering user' });
+      }
+
+      return res.status(200).json({ success: true, message: 'User registered successfully' });
+    });
+  });
+});
 
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
