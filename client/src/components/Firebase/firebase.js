@@ -1,4 +1,3 @@
-
 import { initializeApp } from 'firebase/app';
 import {
 getAuth,
@@ -8,6 +7,7 @@ signOut,
 sendPasswordResetEmail,
 updatePassword,
 } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBQpmReNQV1f9I5zXvFDxDmdc33gA2zDTU",
@@ -20,17 +20,39 @@ const firebaseConfig = {
   measurementId: "G-QZ00EX7L7W"
 };
 
-  const app = initializeApp(firebaseConfig)
+const app = initializeApp(firebaseConfig)
 
  class Firebase {
   constructor() {
     this.auth = getAuth(); // Corrected here
+    this.db = getFirestore(app);
   }
+
+  doSetUserData = (uid, userData) => {
+    const userRef = doc(this.db, 'users', uid);
+    return setDoc(userRef, userData);
+  };
+
+  doCreateUserWithEmailAndPassword = (email, password, firstName, lastName) => {
+    return createUserWithEmailAndPassword(this.auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        const userData = {
+          firstName: firstName,
+          lastName: lastName,
+        };
+        return this.doSetUserData(user.uid, userData);
+      })
+      .catch(error => {
+        console.error("Error creating user:", error);
+        throw error;
+      });
+  };
 
   // *** Auth API ***
 
-  doCreateUserWithEmailAndPassword = (email, password) =>
-    createUserWithEmailAndPassword(this.auth, email, password);
+  // doCreateUserWithEmailAndPassword = (email, password) =>
+  //   createUserWithEmailAndPassword(this.auth, email, password);
 
   doSignInWithEmailAndPassword = (email, password) =>
     signInWithEmailAndPassword(this.auth, email, password);

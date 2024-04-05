@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Grid, Avatar, Paper} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
 
 function ProfilePage() {
-  const userName = "User's Name";
-  const userBio = "A brief bio about the user.";
+  const [userName, setUserName] = useState("");
+  // const userBio = "A brief bio about the user.";
   const friendsCount = 2;
-  const expensesConut = 3;
+  // const expensesConut = 3;
   const badgesCount = 4;
   // const followCount = 5;
 
@@ -18,6 +19,28 @@ function ProfilePage() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = getAuth().onAuthStateChanged(user => {
+      if (user) {
+        console.log("Fetching details for UID:", user.uid);
+        console.log(typeof user.uid);
+        const uid = user.uid
+        const url = `/api/user/${uid}`;
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            console.log("Received data:", data);
+            if (data.error) {
+              throw new Error(data.error);
+            }
+            setUserName(`${data.FirstName} ${data.LastName}`);
+          })
+          .catch(error => console.error("There was an error fetching the user details:", error));
+      } else {
+        console.log("No user logged in");
+      }
+    });
+
     const reviewsCount = JSON.parse(localStorage.getItem('restaurantReviews') || '[]');
     const beenToRestaurants = JSON.parse(localStorage.getItem('beenToRestaurants') || '[]');
     const shortlistedRestaurants = JSON.parse(localStorage.getItem('shortlistedRestaurants') || '[]');
@@ -27,6 +50,8 @@ function ProfilePage() {
     setVisitedCount(beenToRestaurants.length);
     setShortlistedCount(shortlistedRestaurants.length);
     setFavouritesCount(favouriteRestaurants.length);
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -38,7 +63,7 @@ function ProfilePage() {
           </Grid>
           <Grid item xs={12} sm={8}>
             <Typography variant="h4">{userName}</Typography>
-            <Typography variant="body1">{userBio}</Typography>
+            {/* <Typography variant="body1">{userBio}</Typography> */}
           </Grid>
         </Grid>
       </Box>
@@ -49,7 +74,7 @@ function ProfilePage() {
         <Typography>Shortlisted: {shortlistedCount}</Typography>
         <Typography>Favourited: {favouritesCount}</Typography>
         <Typography>Friends: {friendsCount}</Typography>
-        <Typography>Expenses: {expensesConut}</Typography>
+        {/* <Typography>Expenses: {expensesConut}</Typography> */}
         <Typography>Badges: {badgesCount}</Typography>
         {/* <Typography>Follow People: {followCount}</Typography> */}
       </Paper>
@@ -60,7 +85,7 @@ function ProfilePage() {
       <Button onClick={() => navigate('/Shortlist')}>Shortlist</Button>
       <Button onClick={() => navigate('/FavouritesList')}>Favourites</Button>
       <Button onClick={() => navigate('/friends')}>My Friends</Button>
-      <Button onClick={() => navigate('/Expenses')}>My Expenses</Button>
+      {/* <Button onClick={() => navigate('/Expenses')}>My Expenses</Button> */}
       <Button onClick={() => navigate('/Badges?userId=1')}>My Badges</Button>
       <Button onClick={() => navigate('/Follow')}>Follow People</Button>
     </Container>

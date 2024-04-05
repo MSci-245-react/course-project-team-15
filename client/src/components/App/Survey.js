@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography,TextField, Button, Slider, FormControl, InputLabel, Select, MenuItem, FormLabel, FormHelperText} from '@mui/material';
+import { getAuth } from 'firebase/auth';
 
 function Survey() {
     const serverURL = "http://localhost:3000";
@@ -19,6 +20,11 @@ function Survey() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        const auth = getAuth();
+        const user = auth.currentUser;
+        const userID = user.uid;
+
         if (validateForm()) {
             const surveyData = {
                 cuisinePreferences,
@@ -29,6 +35,7 @@ function Survey() {
                 diningFrequency,
                 healthImportance,
                 allergies,
+                userID,
             };
             await callApiAddSurvey(surveyData);
             navigate('/');
@@ -46,6 +53,7 @@ function Survey() {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
+
         },
         body: JSON.stringify(surveyData),
         });
