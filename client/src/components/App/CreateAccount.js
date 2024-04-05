@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import axios from 'axios';
+import { FirebaseContext } from '../Firebase';
 
 const auth = getAuth();
 
@@ -104,17 +105,19 @@ function CreateAccount() {
     return errors;
   };
 
-  const callApiRegisterUser = async () => {
+  const callApiRegisterUser = async (userDetails) => {
     const url = "/api/register"; // Adjust the URL path according to your API endpoint
     console.log("Registering user at URL:", url);
-
+    console.log("Sending userDetails to backend:", userDetails);
+    
     try {
       const response = await axios.post(url, {
-        username,
-        email,
-        password,
-        firstName,
-        lastName
+        username: userDetails.username,
+        email: userDetails.email,
+        password: userDetails.password,
+        firstName: userDetails.firstName,
+        lastName: userDetails.lastName,
+        uid: userDetails.uid,
       });
 
       if (response.status !== 200) {
@@ -159,7 +162,14 @@ function CreateAccount() {
       console.log('Successfully created Firebase account:', user.uid);
   
       // Now, call your backend API to insert the user details into the MySQL database
-      await callApiRegisterUser();
+      await callApiRegisterUser({
+        username,
+        email,
+        password,
+        firstName,
+        lastName,
+        uid: user.uid,
+      });
   
       // Navigate to the survey page after successful account creation
       navigate('/Survey');

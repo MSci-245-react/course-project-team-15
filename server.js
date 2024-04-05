@@ -44,10 +44,10 @@ const checkAuth = (req, res, next) => {
   });
   };
 
+
 // API to add user survery to the database
 app.post('/api/survey', (req, res) => {
 	const { userID, cuisinePreferences, dietaryRestrictions, mealPreferences, budget, ambiancePreference, diningFrequency, healthImportance, allergies } = req.body;
-  
 	let connection = mysql.createConnection(config);
   
 	const sql = `INSERT INTO Survey (userID, cuisinePreferences, dietaryRestrictions, mealPreferences, budget, ambiancePreference, diningFrequency, healthImportance, allergies) 
@@ -64,7 +64,7 @@ app.post('/api/survey', (req, res) => {
 	  return res.status(200).json({ success: true, message: "Survey data successfully added" });
 	});
 	connection.end();
-  });
+});
 
 // API to get all restaurants from the database
 app.get('/api/restaurants', (req, res) => {
@@ -347,7 +347,7 @@ app.get('/api/user/:userId', (req, res) => {
 
 // API to register a new user
 app.post('/api/register', async (req, res) => {
-  const { username, email, password, firstName, lastName } = req.body;
+  const { username, email, password, firstName, lastName, uid } = req.body;
 
   // Check if username or email already exists
   const userExistsQuery = 'SELECT COUNT(*) AS count FROM Users WHERE Username = ? OR Email = ?';
@@ -363,18 +363,35 @@ app.post('/api/register', async (req, res) => {
     }
 
     // Insert user information into the Users table
-    const insertUserQuery = 'INSERT INTO Users (Username, Email, Password, FirstName, LastName) VALUES (?, ?, ?, ?, ?)';
-    connection.query(insertUserQuery, [username, email, password, firstName, lastName], (error, results) => {
+    const insertUserQuery = 'INSERT INTO Users (Username, Email, Password, FirstName, LastName, FirebaseUID) VALUES (?, ?, ?, ?, ?, ?)';
+    connection.query(insertUserQuery, [username, email, password, firstName, lastName, uid], (error, results) => {
       connection.end(); // Close the database connection
       if (error) {
         console.error('Error inserting user into database:', error.message);
         return res.status(500).json({ error: 'Error registering user' });
       }
-
       return res.status(200).json({ success: true, message: 'User registered successfully' });
     });
   });
 });
 
+app.get('/api/user/:uid', (req, res) => {
+  const uid = req.params.uid;
+  console.log('UID extracted from request:', uid);
+  const query = 'SELECT FirstName, LastName FROM Users WHERE FirebaseUID = ?';
+
+  pool.query(query, [uid], (error, results) => {
+    if (error) {
+      console.error("Error fetching user details:", error);
+      return res.status(500).json({ error: "Error fetching user details from the database" });
+    }
+
+    if (results.length > 0) {
+      res.json(results[0]);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  });
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
