@@ -376,9 +376,10 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.get('/api/user/:uid', (req, res) => {
+  console.log('Request received at /api/user/:uid');
   const uid = req.params.uid;
   console.log('UID extracted from request:', uid);
-  const query = 'SELECT FirstName, LastName FROM Users WHERE FirebaseUID = ?';
+  const query = 'SELECT FirebaseUID, FirstName, LastName FROM Users WHERE FirebaseUID = ?';
 
   pool.query(query, [uid], (error, results) => {
     if (error) {

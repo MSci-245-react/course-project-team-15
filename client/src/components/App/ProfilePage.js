@@ -23,7 +23,9 @@ function ProfilePage() {
     const unsubscribe = getAuth().onAuthStateChanged(user => {
       if (user) {
         console.log("Fetching details for UID:", user.uid);
-        const url = `/api/user/${user.uid}`;
+        console.log(typeof user.uid);
+        const uid = user.uid
+        const url = `/api/user/${uid}`;
         fetch(url)
           .then(response => response.json())
           .then(data => {

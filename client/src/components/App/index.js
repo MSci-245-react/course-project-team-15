@@ -76,6 +76,16 @@ function App() {
   // Determine authentication status based on authUser's presence
   const authenticated = !!authUser;
 
+    // Function to handle sign out
+    const handleSignOut = () => {
+      firebase.auth.signOut().then(() => {
+        console.log('Signed out successfully');
+        // Optionally, redirect the user or perform other actions post sign-out
+      }).catch((error) => {
+        console.error('Sign out error:', error);
+      });
+    };
+
   return (
     <ThemeProvider theme={theme}>
       <Router>
@@ -91,6 +101,9 @@ function App() {
             <Button color="inherit" component={Link} to="/Recommendations">Recommendations</Button>
             <Button color="inherit" component={Link} to="/ProfilePage">Profile</Button>
             <Button color="inherit" component={Link} to="/CreateAccount">Create Account</Button>
+            {authUser && (
+              <Button color="inherit" onClick={handleSignOut}>Sign Out</Button>
+            )}
           </Toolbar>
         </AppBar>
 

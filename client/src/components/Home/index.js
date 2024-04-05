@@ -73,12 +73,12 @@ const Home = () => {
     <>
       <Grid container>
         <Grid item>
-          <Typography>Welcome to MSci342!</Typography>
+          {/* <Typography>Welcome to MSci342!</Typography>
           <Typography>You are on the Home page.</Typography>
-          <Typography>You have been authenticated with Firebase</Typography>
+          <Typography>You have been authenticated with Firebase</Typography> */}
         </Grid>
         <Grid item>
-          <Button onClick={handleSignOut}>Sign Out</Button>
+          {/* <Button onClick={handleSignOut}>Sign Out</Button> */}
         </Grid>
       </Grid>
     </>
