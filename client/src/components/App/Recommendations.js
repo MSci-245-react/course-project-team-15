@@ -24,7 +24,7 @@ function Recommendations() {
     const user = auth.currentUser;
     if (user) {
       const userId = user.uid;
-    fetch(`/api/cuisine-preference/${userId}`)
+      fetch(`/api/cuisine-preference/${userId}`)
       .then(response => response.json())
       .then(data => {
         setCuisinePreference(data.cuisinePreference);

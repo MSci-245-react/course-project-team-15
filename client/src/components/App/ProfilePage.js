@@ -20,27 +20,29 @@ function ProfilePage() {
 
   React.useEffect(() => {
     const auth = getAuth();
-    const unsubscribe = getAuth().onAuthStateChanged(user => {
-      if (user) {
-        console.log("Fetching details for UID:", user.uid);
-        console.log(typeof user.uid);
-        const uid = user.uid
-        const url = `/api/user/${uid}`;
-        fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            console.log("Received data:", data);
-            if (data.error) {
-              throw new Error(data.error);
-            }
-            setUserName(`${data.FirstName} ${data.LastName}`);
-          })
-          .catch(error => console.error("There was an error fetching the user details:", error));
-      } else {
-        console.log("No user logged in");
-      }
-    });
+    const user = auth.currentUser;
+    if (user) {
+      console.log("Fetching details for UID:", user.uid);
+      const uid = user.uid;
+      const url = `/api/user-info/${uid}`;
+      console.log(url);
 
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          console.log("Received data:", data);
+          if (data.error) {
+            throw new Error(data.error);
+          }
+            const firstName = data.user.firstName || "John";
+            const lastName = data.user.lastName || "Snow";
+
+            setUserName(`${firstName} ${lastName}`);
+        })
+        .catch(error => console.error("There was an error fetching the user details:", error));
+    } else {
+      console.log("No user logged in");
+    }
     const reviewsCount = JSON.parse(localStorage.getItem('restaurantReviews') || '[]');
     const beenToRestaurants = JSON.parse(localStorage.getItem('beenToRestaurants') || '[]');
     const shortlistedRestaurants = JSON.parse(localStorage.getItem('shortlistedRestaurants') || '[]');
@@ -50,8 +52,6 @@ function ProfilePage() {
     setVisitedCount(beenToRestaurants.length);
     setShortlistedCount(shortlistedRestaurants.length);
     setFavouritesCount(favouriteRestaurants.length);
-
-    return () => unsubscribe();
   }, []);
 
   return (

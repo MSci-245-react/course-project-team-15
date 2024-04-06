@@ -375,24 +375,34 @@ app.post('/api/register', async (req, res) => {
   });
 });
 
-app.get('/api/user/:uid', (req, res) => {
-  console.log('Request received at /api/user/:uid');
-  const { uid }  = req.params;
+app.get('/api/user-info/:uid', (req, res) => {
+  const { uid } = req.params;
   let connection = mysql.createConnection(config);
 
   console.log('UID extracted from request:', uid);
   const query = 'SELECT FirebaseUID, FirstName, LastName FROM Users WHERE FirebaseUID = ?';
 
   connection.query(query, [uid], (error, results) => {
+    connection.end(); 
     if (error) {
       console.error("Error fetching user details:", error);
       return res.status(500).json({ error: "Error fetching user details from the database" });
     }
-
     if (results.length > 0) {
-      res.json(results[0]);
+      const user = results[0];
+      console.log('User details fetched successfully:', user);
+      res.json({
+        success: true,
+        message: "User details fetched successfully",
+        user: {
+          uid: user.FirebaseUID,
+          firstName: user.FirstName,
+          lastName: user.LastName
+        }
+      });
     } else {
-      res.status(404).json({ message: "User not found" });
+      console.log('User not found for UID:', uid);
+      res.status(404).json({ success: false, message: "User not found" });
     }
   });
 });
