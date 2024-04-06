@@ -121,6 +121,12 @@ function Survey() {
                     error={!!errors.cuisinePreferences}>
                         <MenuItem value="Italian">Italian</MenuItem>
                         <MenuItem value="Mexican">Mexican</MenuItem>
+                        <MenuItem value="Indian">Indian</MenuItem>
+                        <MenuItem value="American">American</MenuItem>
+                        <MenuItem value="Middle Eastern">Middle Eastern</MenuItem>
+                        <MenuItem value="African">African</MenuItem>
+                        <MenuItem value="Greek">Greek</MenuItem>
+                        <MenuItem value="Asian">Asian</MenuItem>
                 </Select>
                 <FormHelperText error>{errors.cuisinePreferences}</FormHelperText>
             </FormControl>
@@ -137,6 +143,8 @@ function Survey() {
                     error={!!errors.dietaryRestrictions}>
                         <MenuItem value="Vegan">Vegan</MenuItem>
                         <MenuItem value="Vegetarian">Vegetarian</MenuItem>
+                        <MenuItem value="Halal">Halal</MenuItem>
+                        <MenuItem value="Gluten-free">Gluten-free</MenuItem>
                         <MenuItem value="None">None</MenuItem>
                 </Select>
                 <FormHelperText error>{errors.dietaryRestrictions}</FormHelperText>
@@ -153,6 +161,7 @@ function Survey() {
                     onChange={(e) => setMealPreferences(e.target.value)}
                     error={!!errors.mealPreferences}>
                         <MenuItem value="Breakfast">Breakfast</MenuItem>
+                        <MenuItem value="Brunch">Brunch</MenuItem>
                         <MenuItem value="Lunch">Lunch</MenuItem>
                         <MenuItem value="Dinner">Dinner</MenuItem>
                 </Select>
@@ -170,8 +179,8 @@ function Survey() {
                     step={1}
                     marks
                     min={1}
-                    max={4}
-                    valueLabelFormat={(value) => ["$", "$$", "$$$", "$$$$"][value - 1]}
+                    max={3}
+                    valueLabelFormat={(value) => ["$", "$$", "$$$"][value - 1]}
                 />
                 </FormControl>
 
@@ -187,7 +196,7 @@ function Survey() {
                     error={!!errors.ambiancePreference}>
                         <MenuItem value="Fine Dining">Fine Dining</MenuItem>
                         <MenuItem value="Cafe">Cafe</MenuItem>
-                        <MenuItem value="Fast Food">Fast Food</MenuItem>
+                        <MenuItem value="Fast-Food">Fast Food</MenuItem>
                 </Select>
                 <FormHelperText error>{errors.ambiancePreference}</FormHelperText>
             </FormControl> 
