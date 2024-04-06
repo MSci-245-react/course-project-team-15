@@ -1,10 +1,19 @@
 import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function FavouritesList() {
   const navigate = useNavigate();
   const [favouriteRestaurants, setFavouriteRestaurants] = useState([]);
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
 
   React.useEffect(() => {
     fetchFavouriteRestaurants();
@@ -40,8 +49,9 @@ function FavouritesList() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>My Favourites</Typography>
+      <Typography variant="h2" align="center" gutterBottom>My Favourite Restaurants</Typography>
       <List>
         {favouriteRestaurants.map((restaurant) => (
           <ListItem key={restaurant.id} divider>
@@ -52,6 +62,7 @@ function FavouritesList() {
         ))}
       </List>
     </Container>
+    </ThemeProvider>
   );
 }
 

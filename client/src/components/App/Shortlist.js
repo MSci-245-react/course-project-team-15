@@ -1,10 +1,19 @@
 import React, { useState, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Shortlist() {
   const navigate = useNavigate();
   const [shortlistedRestaurants, setShortlistedRestaurants] = useState([]);
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
   
   React.useEffect(() => {
     fetchShortlistedRestaurants();
@@ -40,8 +49,9 @@ function Shortlist() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>Shortlist</Typography>
+      <Typography variant="h2" align="center" gutterBottom>Places I Wish To Go</Typography>
       <List>
         {shortlistedRestaurants.map((restaurant) => (
           <ListItem key={restaurant.id} divider>
@@ -52,6 +62,7 @@ function Shortlist() {
         ))}
       </List>
     </Container>
+    </ThemeProvider>
   );
 }
 

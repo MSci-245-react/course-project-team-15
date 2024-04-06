@@ -5,6 +5,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import axios from 'axios';
 import { FirebaseContext } from '../Firebase';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const auth = getAuth();
 
@@ -25,6 +26,14 @@ function CreateAccount() {
   const [existingUsernames, setExistingUsernames] = useState([]);
 
   const navigate = useNavigate();
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
 
   useEffect(() => {
     // Fetch existing usernames from the backend API
@@ -179,9 +188,6 @@ function CreateAccount() {
     }
   };
 
-
-  
-
   const validatePassword = (password, unmetRequirements) => {
     const minLength = 5;
     const maxLength = 32;
@@ -206,9 +212,10 @@ function CreateAccount() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Typography variant="h3">Create Account</Typography>
+        <Typography variant="h2" align="center">Create Account</Typography>
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
@@ -288,7 +295,7 @@ function CreateAccount() {
         />
       </Grid>
       <Grid item xs={12}>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
+        <Button variant="contained" color="primary" style={{ color: 'white' }} onClick={handleSubmit}>
           Create Account
         </Button>
       </Grid>
@@ -304,6 +311,7 @@ function CreateAccount() {
         </Grid>
       )}
     </Grid>
+    </ThemeProvider>
   );
 }
 

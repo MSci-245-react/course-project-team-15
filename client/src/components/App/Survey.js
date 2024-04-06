@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography,TextField, Button, Slider, FormControl, InputLabel, Select, MenuItem, FormLabel, FormHelperText} from '@mui/material';
 import { getAuth } from 'firebase/auth';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Survey() {
     const serverURL = "http://localhost:3000";
@@ -17,6 +18,14 @@ function Survey() {
     const [errors, setErrors] = useState({});
 
     const navigate = useNavigate();
+
+    const theme = createTheme({
+        palette: {
+          primary: {
+            main: '#FFA500',
+          },
+        },
+      });
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -105,8 +114,9 @@ function Survey() {
     };
 
     return (
+        <ThemeProvider theme={theme}>
         <Container maxWidth="sm">
-        <Typography variant="h4" gutterBottom>User Survey</Typography>
+        <Typography variant="h2" align="center" gutterBottom>User Survey</Typography>
         <form onSubmit={handleSubmit}>
             
             {/* Cuisine Preferences */}
@@ -242,9 +252,10 @@ function Survey() {
             />
             <FormHelperText error>{errors.allergies}</FormHelperText>
         
-            <Button type="submit" variant="contained" color="primary">Submit</Button>
+            <Button type="submit" variant="contained" color="primary"  style={{ color: 'white' }}>Submit</Button>
         </form>
         </Container>
+        </ThemeProvider>
     );
 }
 
