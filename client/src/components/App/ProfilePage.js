@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Button, Box, Grid, Avatar, Paper} from '@mui/material';
+import { Container, Typography, Button, Box, Grid, Avatar, Paper, TextField} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 
 function ProfilePage() {
   const [userName, setUserName] = useState("");
-  // const userBio = "A brief bio about the user.";
+  const [bio, setBio] = useState("");
+  const [displayBio, setDisplayBio] = useState("");
+  const [isEditingBio, setIsEditingBio] = useState(false); 
   // const friendsCount = 2;
   // const expensesConut = 3;
   const badgesCount = 4;
@@ -54,6 +56,20 @@ function ProfilePage() {
     setFavouritesCount(favouriteRestaurants.length);
   }, []);
 
+  const handleBioChange = (event) => {
+    setBio(event.target.value);
+  };
+
+  const handleBioSubmit = () => {
+    setDisplayBio(bio);
+    setIsEditingBio(false);
+  };
+
+  const handleEditClick = () => {
+    setIsEditingBio(true);
+  };
+
+
   return (
     <Container maxWidth="md">
       <Box paddingTop={2}>
@@ -61,9 +77,29 @@ function ProfilePage() {
           <Grid item xs={12} sm={4}>
             <Avatar alt="User Name" src="/path/to/profile-pic.jpg" sx={{ width: 100, height: 100 }} />
           </Grid>
-          <Grid item xs={12} sm={8}>
+          <Grid item xs={4} sm={8}>
             <Typography variant="h4">{userName}</Typography>
-            {/* <Typography variant="body1">{userBio}</Typography> */}
+            <Typography variant="body1">{displayBio || "No bio available."}</Typography> {/* Display the bio or a placeholder */}
+            {isEditingBio ? (
+              <Box my={2}>
+                <TextField
+                  label="Edit Bio"
+                  variant="outlined"
+                  fullWidth
+                  value={bio}
+                  onChange={handleBioChange}
+                  multiline
+                  rows={4}
+                />
+                <Button onClick={handleBioSubmit} color="primary" variant="contained" style={{marginTop: '10px'}}>
+                  Submit Bio
+                </Button>
+              </Box>
+            ) : (
+              <Button onClick={handleEditClick} color="primary" variant="outlined" style={{marginTop: '10px'}}>
+                Edit Bio
+              </Button>
+            )}
           </Grid>
         </Grid>
       </Box>
