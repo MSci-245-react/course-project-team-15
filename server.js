@@ -377,11 +377,13 @@ app.post('/api/register', async (req, res) => {
 
 app.get('/api/user/:uid', (req, res) => {
   console.log('Request received at /api/user/:uid');
-  const uid = req.params.uid;
+  const { uid }  = req.params;
+  let connection = mysql.createConnection(config);
+
   console.log('UID extracted from request:', uid);
   const query = 'SELECT FirebaseUID, FirstName, LastName FROM Users WHERE FirebaseUID = ?';
 
-  pool.query(query, [uid], (error, results) => {
+  connection.query(query, [uid], (error, results) => {
     if (error) {
       console.error("Error fetching user details:", error);
       return res.status(500).json({ error: "Error fetching user details from the database" });
@@ -392,6 +394,53 @@ app.get('/api/user/:uid', (req, res) => {
     } else {
       res.status(404).json({ message: "User not found" });
     }
+  });
+});
+
+
+app.get('/api/preferences/:userId', (req, res) => {
+  const { userId } = req.params;
+  let connection = mysql.createConnection(config);
+  const query = 'SELECT CuisinePreferences, DietaryRestrictions, MealPreferences, Budget, AmbiancePreference, DiningFrequency, HealthImportance, Allergies FROM Survey WHERE UserID = ?';
+
+  // Query to fetch the user's cuisine preference
+  const preferenceQuery = 'SELECT CuisinePreferences FROM Survey WHERE UserID = ?';
+  
+  connection.query(preferenceQuery, [userId], (error, preferencesResults) => {
+    if (error) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (preferencesResults.length === 0) {
+      return res.status(404).json({ error: 'User preferences not found' });
+    }
+
+    // Extract the cuisine preference from the results
+    const cuisinePreference = preferencesResults[0].CuisinePreferences.replace(/["]+/g, '');
+    console.log(`Cuisine Preference: ${cuisinePreference}`);
+
+    const restaurantQuery = `
+    SELECT Name, Description, Fulladdress, AverageRating as rating, FeaturedImage, Price, Categories 
+    FROM Restaurants 
+    WHERE Categories LIKE CONCAT('%', ?, '%')`;
+
+    connection.query(restaurantQuery, [`%${cuisinePreference}%`], (error, restaurantsResults) => {
+      if (error) {
+        console.error('Error fetching restaurants:', error);
+        connection.end();
+        return res.status(500).json({ error: 'Internal server error fetching restaurants' });
+      }
+
+      // Structure the final response to include both the cuisine preference and the matching restaurants
+      const response = {
+        cuisinePreference: cuisinePreference,
+        restaurants: restaurantsResults
+      };
+      // Return the structured response
+      res.json(response);
+      console.log(response);
+      // Close the database connection
+      connection.end();
+    });
   });
 });
 
