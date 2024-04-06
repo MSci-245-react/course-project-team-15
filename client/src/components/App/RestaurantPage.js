@@ -1,11 +1,20 @@
 import React, {useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Rating, Button, Box, Link} from '@mui/material';
+import { Container, Typography, Rating, Button, Box, Link, Grid} from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function RestaurantPage() {
   const { id } = useParams();
   const [restaurantDetails, setRestaurantDetails] = useState({});
   const [isReviewWritten, setIsReviewWritten] = useState(false); 
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
   
   React.useEffect(() => {
     const fetchRestaurantDetails = async () => {
@@ -110,12 +119,20 @@ function RestaurantPage() {
   };
 
   return (
-    <Container maxWidth="md">
-      <Typography variant="h4" component="h1" gutterBottom>{restaurantDetails.Name}</Typography>
-
+    <ThemeProvider theme={theme}>
+    <Container maxWidth="lg">
+    <Box my={4}> 
+      <Typography variant="h3" component="h1" gutterBottom>{restaurantDetails.Name}</Typography>
+    </Box>
+    <Box my={2}> 
       <Typography variant="h6">Description: {restaurantDetails.Description}</Typography>
+    </Box>
+    <Box my={2}> 
       <Typography variant="h6">Categories: {restaurantDetails.Categories}</Typography>
+    </Box>
+    <Box my={2}> 
       <Typography variant="h6">Price: {restaurantDetails.Price}</Typography>
+    </Box>
       
       <Box display="flex" alignItems="center" my={2}>
         <Rating name="read-only" value={restaurantDetails.rating || 0} readOnly />
@@ -124,20 +141,27 @@ function RestaurantPage() {
         </Typography>
       </Box>
 
+      <Box my={2}> 
       <Typography variant="h6">Website: 
       <Link href={restaurantDetails.Website} target="_blank" rel="noopener noreferrer">{restaurantDetails.Website}</Link>
       </Typography>
-
-      <Typography variant="h6">Opening Hours: {restaurantDetails.OpeningHours}</Typography>
-      
-      <Box sx={{ '& > :not(style)': { m: 1 } }}>
-      <Button onClick={handleWriteReview} variant="outlined" color={isReviewWritten ? "secondary" : "primary"}>{isReviewWritten ? "Edit Review" : "Write a Review"}</Button>
-      <Button onClick={handleBeenToClick} variant="outlined" color={beenTo ? "secondary" : "primary"}>{beenTo ? "Visited" : "Been To"}</Button>
-      <Button onClick={handleShortlistClick} variant="outlined" color={shortlist ? "secondary" : "primary"}>{shortlist ? "Shortlisted" : "Shortlist"}</Button>
-      <Button onClick={handleFavouriteClick} variant="outlined" color={isFavourite ? "secondary" : "primary"}>{isFavourite ? "Favourite" : "Add to Favourites"}</Button>
       </Box>
 
+      <Box my={2}> 
+      <Typography variant="h6">Opening Hours: {restaurantDetails.OpeningHours}</Typography>
+      </Box>
+
+      <Grid item xs={14}>
+      <Box display="flex" justifyContent="center" my={4}>
+        <Button onClick={handleWriteReview} variant="outlined" color={isReviewWritten ? "secondary" : "primary"} sx={{ mx: 1 }}>{isReviewWritten ? "Edit Review" : "Write a Review"}</Button>
+        <Button onClick={handleBeenToClick} variant="outlined" color={beenTo ? "secondary" : "primary"} sx={{ mx: 1 }}>{beenTo ? "Visited" : "Been To"}</Button>
+        <Button onClick={handleShortlistClick} variant="outlined" color={shortlist ? "secondary" : "primary"} sx={{ mx: 1 }}>{shortlist ? "Shortlisted" : "Shortlist"}</Button>
+        <Button onClick={handleFavouriteClick} variant="outlined" color={isFavourite ? "secondary" : "primary"} sx={{ mx: 1 }}>{isFavourite ? "Favourite" : "Add to Favourites"}</Button>
+      </Box>
+      </Grid>
+
     </Container>
+    </ThemeProvider>
   );
 }
 
