@@ -380,7 +380,7 @@ app.get('/api/user-info/:uid', (req, res) => {
   let connection = mysql.createConnection(config);
 
   console.log('UID extracted from request:', uid);
-  const query = 'SELECT FirebaseUID, FirstName, LastName FROM Users WHERE FirebaseUID = ?';
+  const query = 'SELECT FirebaseUID, FirstName, LastName, Email FROM Users WHERE FirebaseUID = ?';
 
   connection.query(query, [uid], (error, results) => {
     connection.end(); 
@@ -397,7 +397,8 @@ app.get('/api/user-info/:uid', (req, res) => {
         user: {
           uid: user.FirebaseUID,
           firstName: user.FirstName,
-          lastName: user.LastName
+          lastName: user.LastName,
+          email: user.Email
         }
       });
     } else {

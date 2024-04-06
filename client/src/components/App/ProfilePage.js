@@ -10,6 +10,7 @@ function ProfilePage() {
   const [displayBio, setDisplayBio] = useState("");
   const [isEditingBio, setIsEditingBio] = useState(false); 
   const [profilePic, setProfilePic] = useState(profilePicDefault);
+  const [email, setEmail] = useState("");
   
   const [surveyResults, setSurveyResults] = useState({
     cuisinePreference: '',
@@ -49,8 +50,8 @@ function ProfilePage() {
           }
             const firstName = data.user.firstName || "John";
             const lastName = data.user.lastName || "Snow";
-
             setUserName(`${firstName} ${lastName}`);
+            setEmail(data.user.email);
         })
         .catch(error => console.error("There was an error fetching the user details:", error));
 
@@ -127,6 +128,7 @@ function ProfilePage() {
           </Grid>
           <Grid item xs={4} sm={8}>
             <Typography variant="h4">{userName}</Typography>
+            <Typography variant="h6">{email}</Typography> 
             <Typography variant="body1">{displayBio || "No bio available."}</Typography>
             {isEditingBio ? (
               <Box my={2}>
