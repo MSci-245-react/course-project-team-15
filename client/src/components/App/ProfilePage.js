@@ -3,6 +3,7 @@ import { Container, Typography, Button, Box, Grid, Avatar, Paper, TextField} fro
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import profilePicDefault from './../../assets/images/default-profile-pic.png';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function ProfilePage() {
   const [userName, setUserName] = useState("");
@@ -31,6 +32,14 @@ function ProfilePage() {
   const [favouritesCount, setFavouritesCount] = useState(0);
 
   const navigate = useNavigate();
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
 
   React.useEffect(() => {
     const auth = getAuth();
@@ -108,6 +117,7 @@ function ProfilePage() {
 
 
   return (
+    <ThemeProvider theme={theme}>
     <Container maxWidth="md">
       <Box paddingTop={2}>
         <Grid container spacing={2} alignItems="center">
@@ -191,7 +201,7 @@ function ProfilePage() {
       </Button>
 
     </Container>
-    
+    </ThemeProvider>
   );
 }
 

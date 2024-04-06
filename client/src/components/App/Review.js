@@ -5,6 +5,7 @@ import ReviewTitle from './ReviewTitle';
 import ReviewBody from './ReviewBody';
 import ReviewRating from './ReviewRating';
 import { v4 as uuidv4 } from 'uuid';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const serverURL = "";
 
@@ -82,6 +83,15 @@ function Review() {
     setErrors((prevErrors) => ({ ...prevErrors, photo: false }));
     setShowConfirmation(false);
   };
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
+
 
   React.useEffect(() => {
   }, [reviewData, isEditing]);
@@ -175,34 +185,6 @@ function Review() {
           localStorage.setItem('restaurantReviews', JSON.stringify(existingReviews));
         };
 
-        // const pointsResponse = await fetch(`${serverURL}/api/awardPoints`, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify({
-        //     userID: 1, 
-        //   }),
-        // });
-        // if (!pointsResponse.ok) {
-        //   console.error('Failed to award points');
-        // }
-
-        // const expensesResponse = await fetch(`${serverURL}/api/getTotalExpenses`, {
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-Type': 'application/json',
-        //   },
-        //   body: JSON.stringify({
-        //     userID: 1,
-        //   }),
-        // });
-        // if (!expensesResponse.ok) {
-        //   console.error('Failed to fetch expenses');
-        // }
-        // const expensesData = await expensesResponse.json();
-        // setTotalSpent(expensesData.totalExpenses);
-
         if(body.success) {
           const reviewData = {
             reviewId: uuidv4(),
@@ -229,6 +211,7 @@ function Review() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Typography variant="h3">{isEditing ? `Edit Review for ${restaurantName}` : `Review ${restaurantName}`}</Typography>
@@ -286,6 +269,7 @@ function Review() {
         <Button
           variant="contained"
           component="label"
+          style={{ color: 'white'}}
         >
           Upload Photo
           <input
@@ -297,7 +281,7 @@ function Review() {
         {photo && <Typography style={{ marginTop: '8px' }}>{photo.name}</Typography>}
       </Grid>
       <Grid item xs={12}>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
+        <Button variant="contained" color="primary" style={{ color: 'white'}} onClick={handleSubmit}>
           Submit Review
         </Button>
       </Grid>
@@ -316,6 +300,7 @@ function Review() {
         </Grid>
       )}
     </Grid>
+    </ThemeProvider>
   );
 }
 

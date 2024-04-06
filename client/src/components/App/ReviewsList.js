@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function ReviewsList() {
   const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
 
   React.useEffect(() => {
     const loadedReviews = JSON.parse(localStorage.getItem('restaurantReviews')) || [];
@@ -24,8 +33,9 @@ function ReviewsList() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>My Reviews</Typography>
+      <Typography variant="h2" align="center" gutterBottom>My Reviews</Typography>
       <List>
         {reviews.map((review) => (
           <ListItem key={review.reviewId} alignItems="flex-start" divider>
@@ -45,6 +55,7 @@ function ReviewsList() {
         ))}
       </List>
     </Container>
+    </ThemeProvider>
   );
 }
 

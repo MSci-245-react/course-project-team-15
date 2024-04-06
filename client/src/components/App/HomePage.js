@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function HomePage() {
   const [cuisine, setCuisine] = useState([]);
@@ -30,6 +31,14 @@ function HomePage() {
   const [rating, setRating] = useState(1);
 
   const [searchTerm, setSearchTerm] = useState('');
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
 
   const handleCuisineChange = (event) => {
     const { value, checked } = event.target;
@@ -121,14 +130,15 @@ function HomePage() {
   };
 
   return (
+    <ThemeProvider theme={theme}>
     <Container maxWidth="lg">
       <Grid container spacing={2}>
         <Grid item xs={12} md={12}>
-          <Typography variant="h3" component="h1" align="center">
+          <Typography variant="h2" component="h1" align="center" style={{ fontWeight: 'bold' }}>
             Welcome to TasteOfLoo
           </Typography>
           <Typography variant="h3" component="h2" align="center" style={{ fontSize: '24px' }}>
-            Discover the best places to eat around the University of Waterloo.
+            Discover the best places to eat around the University of Waterloo
           </Typography>
           {/* Search Feature & Map Button */}
           <Grid container justifyContent="center" alignItems="center">
@@ -164,11 +174,11 @@ function HomePage() {
       {/* Filter Section */}
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
-          <Typography variant="h3" component="h3" style={{ fontSize: '24px' }}>Filters</Typography>
+          <Typography variant="h3" component="h3" style={{ fontSize: '24px', fontWeight: 'bold' }}>Filters</Typography>
           <Grid container direction="column">
             <Grid item>
               <FormControl fullWidth>
-                <Typography variant="body1" style={{ fontSize: '20px' }}>Cuisine Type</Typography>
+                <Typography variant="body1" style={{ fontSize: '20px', fontWeight: 'bold' }}>Cuisine Type</Typography>
                 <label style={{ marginBottom: '5px' }} onClick={() => handleCuisineChange({target: {checked: !cuisine.includes('american'), value: 'american'}})}>
                   <input
                     type="checkbox"
@@ -245,7 +255,7 @@ function HomePage() {
             </Grid>
             <Grid item>
               <FormControl fullWidth>
-                <Typography variant="body1" style={{ fontSize: '20px' }}>Price Range</Typography>
+                <Typography variant="body1" style={{ fontSize: '20px', fontWeight: 'bold'}}>Price Range</Typography>
                 <label style={{ marginBottom: '5px' }} onClick={() => handlePriceChange({target: {checked: !price.includes('$'), value: '$'}})}>
                   <input
                     type="checkbox"
@@ -277,7 +287,7 @@ function HomePage() {
             </Grid>
             <Grid item>
               <FormControl fullWidth>
-                <Typography variant="body1" style={{ fontSize: '20px' }}>Dietary Options</Typography>
+                <Typography variant="body1" style={{ fontSize: '20px', fontWeight: 'bold'}}>Dietary Options</Typography>
                 <label style={{ marginBottom: '5px' }} onClick={() => handleDietaryChange({target: {checked: !dietary.includes('vegetarian'), value: 'vegetarian'}})}>
                   <input
                     type="checkbox"
@@ -318,7 +328,7 @@ function HomePage() {
             </Grid>
             <Grid item>
               <FormControl fullWidth>
-                <Typography variant="body1" style={{ fontSize: '20px' }}>Meal Times</Typography>
+                <Typography variant="body1" style={{ fontSize: '20px', fontWeight: 'bold'}}>Meal Times</Typography>
                 <label style={{ marginBottom: '5px' }} onClick={() => handleMealsChange({target: {checked: !meals.includes('breakfast'), value: 'breakfast'}})}>
                   <input
                     type="checkbox"
@@ -358,7 +368,7 @@ function HomePage() {
               </FormControl>
             </Grid>
             <Grid item>
-              <Typography component="legend" style={{ fontSize: '20px' }}>Rating</Typography>
+              <Typography component="legend" style={{ fontSize: '20px', fontWeight: 'bold'}}>Rating</Typography>
               <Rating name="simple-controlled" value={rating} onChange={handleRatingChange} />
             </Grid>
           </Grid>
@@ -415,6 +425,7 @@ function HomePage() {
         </Grid>
       </Grid>
     </Container>
+    </ThemeProvider>
   );
 }
 

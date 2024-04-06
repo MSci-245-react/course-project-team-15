@@ -4,6 +4,7 @@ import { Container, Typography, Grid, Card, CardContent, CardMedia, Rating, Divi
 import { useNavigate } from 'react-router-dom';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import CommentIcon from '@mui/icons-material/Comment';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function FeedPage() {
   const [trendingRestaurants, setTrendingRestaurants] = useState([]);
@@ -18,6 +19,14 @@ function FeedPage() {
   const [commentTexts, setCommentTexts] = useState({});
   const [likeCounts, setLikeCounts] = useState({});
   const navigate = useNavigate();
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
 
   useEffect(() => {
     loadTrendingRestaurants();
@@ -145,6 +154,7 @@ function FeedPage() {
 
 
   return (
+    <ThemeProvider theme={theme}>
     <Container maxWidth="xl" style={{ padding: 0 }}>
       <Typography variant="h1" component="h1" align="center" style={{ margin: '20px 0' }}>
         Feed
@@ -330,6 +340,7 @@ function FeedPage() {
 
       <Divider style={{ margin: '30px auto', width: '80%' }} />
     </Container>
+    </ThemeProvider>
   );
 }
 

@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function BeenToList() {
   const navigate = useNavigate();
   const [beenToRestaurants, setBeenToRestaurants] = useState([]);
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#FFA500',
+      },
+    },
+  });
 
   React.useEffect(() => {
     fetchBeenToRestaurants();
@@ -38,8 +47,9 @@ function BeenToList() {
   };
   
   return (
+    <ThemeProvider theme={theme}>
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>Been To</Typography>
+      <Typography variant="h2" align="center" gutterBottom>Places I Have Been To</Typography>
       <List>
         {beenToRestaurants.map((restaurant) => (
           <ListItem key={restaurant.id} divider>
@@ -50,6 +60,7 @@ function BeenToList() {
         ))}
       </List>
     </Container>
+    </ThemeProvider>
   );
 }
 
