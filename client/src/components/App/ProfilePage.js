@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Container, Typography, Button, Box, Grid, Avatar, Paper, TextField} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
+import profilePicDefault from './../../assets/images/default-profile-pic.png';
 
 function ProfilePage() {
   const [userName, setUserName] = useState("");
   const [bio, setBio] = useState("");
   const [displayBio, setDisplayBio] = useState("");
   const [isEditingBio, setIsEditingBio] = useState(false); 
+  const [profilePic, setProfilePic] = useState(profilePicDefault);
   // const friendsCount = 2;
   // const expensesConut = 3;
   const badgesCount = 4;
@@ -69,17 +71,36 @@ function ProfilePage() {
     setIsEditingBio(true);
   };
 
+  const handleImageChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const imageURL = URL.createObjectURL(event.target.files[0]);
+      setProfilePic(imageURL);
+    }
+  };
+
 
   return (
     <Container maxWidth="md">
       <Box paddingTop={2}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={4}>
-            <Avatar alt="User Name" src="/path/to/profile-pic.jpg" sx={{ width: 100, height: 100 }} />
+        <Grid item xs={12} sm={4}>
+            <Avatar alt={userName} src={profilePic} sx={{ width: 100, height: 100 }} />
+            <input
+              accept="image/*"
+              type="file"
+              onChange={handleImageChange}
+              style={{ display: 'none' }}
+              id="raised-button-file"
+            />
+            <label htmlFor="raised-button-file">
+              <Button variant="outlined" component="span" style={{ marginTop: '10px' }}>
+                Edit Image
+              </Button>
+            </label>
           </Grid>
           <Grid item xs={4} sm={8}>
             <Typography variant="h4">{userName}</Typography>
-            <Typography variant="body1">{displayBio || "No bio available."}</Typography> {/* Display the bio or a placeholder */}
+            <Typography variant="body1">{displayBio || "No bio available."}</Typography>
             {isEditingBio ? (
               <Box my={2}>
                 <TextField
