@@ -10,10 +10,19 @@ function ProfilePage() {
   const [displayBio, setDisplayBio] = useState("");
   const [isEditingBio, setIsEditingBio] = useState(false); 
   const [profilePic, setProfilePic] = useState(profilePicDefault);
-  // const friendsCount = 2;
-  // const expensesConut = 3;
+  
+  const [surveyResults, setSurveyResults] = useState({
+    cuisinePreference: '',
+    dietaryRestrictions: '',
+    mealPreference: '',
+    budget: '',
+    ambiancePreference: '',
+    diningFrequency: '',
+    healthImportance: '',
+    allergies: '',
+  });
+  
   const badgesCount = 4;
-  // const followCount = 5;
 
   const [reviewsCount, setReviewsCount] = useState(0);
   const [visitedCount, setVisitedCount] = useState(0);
@@ -42,6 +51,18 @@ function ProfilePage() {
             const lastName = data.user.lastName || "Snow";
 
             setUserName(`${firstName} ${lastName}`);
+        })
+        .catch(error => console.error("There was an error fetching the user details:", error));
+
+        const surveyResultsUrl = `/api/survey-results/${uid}`;
+        fetch(surveyResultsUrl)
+        .then(response => response.json())
+        .then(data => {
+          console.log("Received data:", data);
+          if (data.error) {
+            throw new Error(data.error);
+          }
+            setSurveyResults(data);
         })
         .catch(error => console.error("There was an error fetching the user details:", error));
     } else {
@@ -77,6 +98,12 @@ function ProfilePage() {
       setProfilePic(imageURL);
     }
   };
+
+  const handleEditSurveyClick = () => {
+    navigate('/Survey');
+  };
+
+  const surveyEntries = Object.entries(surveyResults);
 
 
   return (
@@ -145,7 +172,24 @@ function ProfilePage() {
       {/* <Button onClick={() => navigate('/Expenses')}>My Expenses</Button> */}
       <Button onClick={() => navigate('/Badges?userId=1')}>My Badges</Button>
       {/* <Button onClick={() => navigate('/Follow')}>Follow People</Button> */}
+
+      <Paper elevation={3} sx={{ mt: 2, p: 2 }}>
+        <Typography variant="h6">Survey Results:</Typography>
+        <p>Cuisine Preference: {surveyResults.cuisinePreference}</p>
+        <p>Dietary Restrictions: {surveyResults.dietaryRestrictions}</p>
+        <p>Meal Preference: {surveyResults.mealPreference}</p>
+        <p>Budget: {surveyResults.budget}</p>
+        <p>Ambiance Preference: {surveyResults.ambiancePreference}</p>
+        <p>Dining Frequency: {surveyResults.diningFrequency}</p>
+        <p>Health Importance: {surveyResults.healthImportance}</p>
+        <p>Allergies: {surveyResults.allergies}</p>
+      </Paper>
+      <Button variant="outlined" onClick={handleEditSurveyClick} style={{ marginTop: '10px' }}>
+          Edit Survey
+      </Button>
+
     </Container>
+    
   );
 }
 

@@ -569,4 +569,49 @@ app.get('/api/budget/:userId', (req, res) => {
   });
 });
 
+app.get('/api/survey-results/:uid', (req, res) => {
+  const { uid } = req.params;
+  const connection = mysql.createConnection(config);
+
+  const query = `
+    SELECT 
+      CuisinePreferences, 
+      DietaryRestrictions, 
+      MealPreferences, 
+      Budget, 
+      AmbiancePreference, 
+      DiningFrequency, 
+      HealthImportance, 
+      Allergies 
+    FROM Survey 
+    WHERE UserID = ?`;
+
+  connection.query(query, [uid], (error, results) => {
+    if (error) {
+      console.error('Error fetching survey results:', error);
+      connection.end();
+      return res.status(500).json({ error: 'Internal server error fetching survey results' });
+    }
+
+    if (results.length > 0) {
+      const surveyResult = results[0];
+      const removeQuotes = str => str.replace(/^"(.+(?="$))"$/, '$1');
+      const response = {
+        cuisinePreference: removeQuotes(surveyResult.CuisinePreferences),
+        dietaryRestrictions: removeQuotes(surveyResult.DietaryRestrictions),
+        mealPreference: surveyResult.MealPreferences,
+        budget: surveyResult.Budget,
+        ambiancePreference: surveyResult.AmbiancePreference,
+        diningFrequency: surveyResult.DiningFrequency,
+        healthImportance: surveyResult.HealthImportance,
+        allergies: surveyResult.Allergies
+      };
+      res.json(response);
+    } else {
+      res.status(404).json({ message: 'Survey results not found for this user.' });
+    }
+    connection.end();
+  });
+});
+
 app.listen(port, () => console.log(`Listening on port ${port}`)); //for the dev version
