@@ -377,11 +377,13 @@ app.post('/api/register', async (req, res) => {
 
 app.get('/api/user/:uid', (req, res) => {
   console.log('Request received at /api/user/:uid');
-  const uid = req.params.uid;
+  const { uid }  = req.params;
+  let connection = mysql.createConnection(config);
+
   console.log('UID extracted from request:', uid);
   const query = 'SELECT FirebaseUID, FirstName, LastName FROM Users WHERE FirebaseUID = ?';
 
-  pool.query(query, [uid], (error, results) => {
+  connection.query(query, [uid], (error, results) => {
     if (error) {
       console.error("Error fetching user details:", error);
       return res.status(500).json({ error: "Error fetching user details from the database" });
@@ -392,6 +394,168 @@ app.get('/api/user/:uid', (req, res) => {
     } else {
       res.status(404).json({ message: "User not found" });
     }
+  });
+});
+
+
+app.get('/api/cuisine-preference/:userId', (req, res) => {
+  const { userId } = req.params;
+  let connection = mysql.createConnection(config);
+  const query = 'SELECT CuisinePreferences, DietaryRestrictions, MealPreferences, Budget FROM Survey WHERE UserID = ?';
+
+  // Query to fetch the user's cuisine preference
+  const preferenceQuery = 'SELECT CuisinePreferences FROM Survey WHERE UserID = ?';
+  
+  connection.query(preferenceQuery, [userId], (error, preferencesResults) => {
+    if (error) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (preferencesResults.length === 0) {
+      return res.status(404).json({ error: 'User preferences not found' });
+    }
+
+    // Extract the cuisine preference from the results
+    const cuisinePreference = preferencesResults[0].CuisinePreferences.replace(/["]+/g, '');
+    console.log(`Cuisine Preference: ${cuisinePreference}`);
+
+    const restaurantQuery = `
+    SELECT Name, Description, Fulladdress, AverageRating as rating, FeaturedImage, Price, Categories, id 
+    FROM Restaurants 
+    WHERE Categories LIKE CONCAT('%', ?, '%')`;
+
+    connection.query(restaurantQuery, [`%${cuisinePreference}%`], (error, restaurantsResults) => {
+      if (error) {
+        console.error('Error fetching restaurants:', error);
+        connection.end();
+        return res.status(500).json({ error: 'Internal server error fetching restaurants' });
+      }
+      const response = {
+        cuisinePreference: cuisinePreference,
+        restaurants: restaurantsResults
+      };
+      res.json(response);
+      console.log(response);
+      connection.end();
+    });
+  });
+});
+
+app.get('/api/dietary-restrictions/:userId', (req, res) => {
+  const { userId } = req.params;
+  let connection = mysql.createConnection(config);
+
+  const dietaryRestrictionQuery = 'SELECT DietaryRestrictions FROM Survey WHERE UserID = ?';
+
+  connection.query(dietaryRestrictionQuery, [userId], (error, preferencesResults) => {
+    if (error) {
+      connection.end();
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (preferencesResults.length === 0) {
+      connection.end();
+      return res.status(404).json({ error: 'User preferences not found' });
+    }
+
+    const dietaryRestrictions = preferencesResults[0].DietaryRestrictions.replace(/["]+/g, '');
+
+    const restaurantQuery = `
+      SELECT Name, Description, Fulladdress, AverageRating as rating, FeaturedImage, Price, Categories, id 
+      FROM Restaurants 
+      WHERE Categories LIKE CONCAT('%', ?, '%')`;
+
+    connection.query(restaurantQuery, [`%${dietaryRestrictions}%`], (error, restaurantsResults) => {
+      connection.end();
+      if (error) {
+        console.error('Error fetching restaurants based on dietary restrictions:', error);
+        return res.status(500).json({ error: 'Internal server error fetching restaurants' });
+      }
+
+      const response = {
+        dietaryRestrictions: dietaryRestrictions,
+        restaurants: restaurantsResults
+      };
+
+      res.json(response);
+    });
+  });
+});
+
+app.get('/api/meal-preference/:userId', (req, res) => {
+  const { userId } = req.params;
+  let connection = mysql.createConnection(config);
+
+  const mealPreferencesQuery = 'SELECT MealPreferences FROM Survey WHERE UserID = ?';
+
+  connection.query(mealPreferencesQuery, [userId], (error, preferencesResults) => {
+    if (error) {
+      connection.end();
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (preferencesResults.length === 0) {
+      connection.end();
+      return res.status(404).json({ error: 'User preferences not found' });
+    }
+
+    const mealPreferences = preferencesResults[0].MealPreferences.replace(/["]+/g, '');
+
+    const restaurantQuery = `
+      SELECT Name, Description, Fulladdress, AverageRating as rating, FeaturedImage, Price, Categories, id 
+      FROM Restaurants 
+      WHERE Categories LIKE CONCAT('%', ?, '%')`;
+
+    connection.query(restaurantQuery, [`%${mealPreferences}%`], (error, restaurantsResults) => {
+      connection.end();
+      if (error) {
+        console.error('Error fetching restaurants based on dietary restrictions:', error);
+        return res.status(500).json({ error: 'Internal server error fetching restaurants' });
+      }
+
+      const response = {
+        mealPreferences: mealPreferences,
+        restaurants: restaurantsResults
+      };
+
+      res.json(response);
+    });
+  });
+});
+
+app.get('/api/budget/:userId', (req, res) => {
+  const { userId } = req.params;
+  let connection = mysql.createConnection(config);
+
+  const budgetQuery = 'SELECT Budget FROM Survey WHERE UserID = ?';
+
+  connection.query(budgetQuery, [userId], (error, preferencesResults) => {
+    if (error) {
+      connection.end();
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+    if (preferencesResults.length === 0) {
+      connection.end();
+      return res.status(404).json({ error: 'User preferences not found' });
+    }
+
+    const budget = preferencesResults[0].Budget.replace(/["]+/g, '');
+
+    const restaurantQuery = `
+      SELECT Name, Description, Fulladdress, AverageRating as rating, FeaturedImage, Price, Categories, id 
+      FROM Restaurants 
+      WHERE Price LIKE CONCAT('%', ?, '%')`;
+
+    connection.query(restaurantQuery, [`%${budget}%`], (error, restaurantsResults) => {
+      connection.end();
+      if (error) {
+        console.error('Error fetching restaurants based on dietary restrictions:', error);
+        return res.status(500).json({ error: 'Internal server error fetching restaurants' });
+      }
+
+      const response = {
+        budget: budget,
+        restaurants: restaurantsResults
+      };
+      res.json(response);
+    });
   });
 });
 

@@ -6,7 +6,7 @@ import { getAuth } from 'firebase/auth';
 function ProfilePage() {
   const [userName, setUserName] = useState("");
   // const userBio = "A brief bio about the user.";
-  const friendsCount = 2;
+  // const friendsCount = 2;
   // const expensesConut = 3;
   const badgesCount = 4;
   // const followCount = 5;
@@ -73,7 +73,7 @@ function ProfilePage() {
         <Typography>Visited: {visitedCount}</Typography>
         <Typography>Shortlisted: {shortlistedCount}</Typography>
         <Typography>Favourited: {favouritesCount}</Typography>
-        <Typography>Friends: {friendsCount}</Typography>
+        {/* <Typography>Friends: {friendsCount}</Typography> */}
         {/* <Typography>Expenses: {expensesConut}</Typography> */}
         <Typography>Badges: {badgesCount}</Typography>
         {/* <Typography>Follow People: {followCount}</Typography> */}
@@ -84,10 +84,10 @@ function ProfilePage() {
       <Button onClick={() => navigate('/BeenToList')}>Been</Button>
       <Button onClick={() => navigate('/Shortlist')}>Shortlist</Button>
       <Button onClick={() => navigate('/FavouritesList')}>Favourites</Button>
-      <Button onClick={() => navigate('/friends')}>My Friends</Button>
+      {/* <Button onClick={() => navigate('/friends')}>My Friends</Button> */}
       {/* <Button onClick={() => navigate('/Expenses')}>My Expenses</Button> */}
       <Button onClick={() => navigate('/Badges?userId=1')}>My Badges</Button>
-      <Button onClick={() => navigate('/Follow')}>Follow People</Button>
+      {/* <Button onClick={() => navigate('/Follow')}>Follow People</Button> */}
     </Container>
   );
 }
