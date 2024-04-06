@@ -5,6 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Container, Typography, TextField, Button } from '@mui/material';
 import pinIcon from './../../assets/images/pin.png';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 function Map() {
     const [restaurants, setRestaurants] = useState([]);
@@ -24,6 +25,14 @@ function Map() {
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
     });
+
+    const theme = createTheme({
+        palette: {
+          primary: {
+            main: '#FFA500',
+          },
+        },
+      });
 
     const loadRestaurants = async () => {
         const url = "/api/restaurants";
@@ -61,8 +70,9 @@ function Map() {
         }
     };
     return (
+        <ThemeProvider theme={theme}>
         <Container maxWidth="lg">
-            <Typography variant="h4" gutterBottom>Find Restaurant</Typography>
+            <Typography variant="h2" align="center" gutterBottom>Find Restaurants</Typography>
             <TextField 
                 label="Search by Address or Name" 
                 variant="outlined" 
@@ -71,7 +81,7 @@ function Map() {
                 onChange={(e) => setSearchText(e.target.value)} 
                 style={{ marginBottom: '10px' }}
             />
-        <Button variant="contained" color="primary" onClick={handleSearch} style={{ marginBottom: '20px' }}>Search</Button>
+        <Button variant="contained" color="primary" onClick={handleSearch} style={{ marginBottom: '20px', color: 'white'}}>Search</Button>
         <MapContainer center={[43.4723, -80.5449]} zoom={13} style={{ height: "600px", width: "100%" }}>
             <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -90,7 +100,7 @@ function Map() {
                             variant="contained" 
                             color="primary" 
                             onClick={() => handleRestaurantClick(restaurant.id)}
-                            style={{ marginTop: '10px' }}
+                            style={{ color: 'white', marginTop: '10px' }}
                             >
                             More Detail
                         </Button>
@@ -99,6 +109,7 @@ function Map() {
             ))}
         </MapContainer>
     </Container>
+    </ThemeProvider>
     );
 }
 

@@ -27,10 +27,15 @@ import React, { useState, useEffect, useContext } from 'react';
 import PrivateRoute from '../Navigation/PrivateRoute';
 import { FirebaseContext } from '../Firebase';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import 'typeface-roboto';
 
 const theme = createTheme({
-  //...
-  });
+  typography: {
+    fontFamily: [
+      'Roboto'
+    ].join(','),
+  },
+});
 
 function App() {
   const [surveyCompleted, setSurveyCompleted] = useState(false);
@@ -92,17 +97,17 @@ function App() {
         <div>
           <PrivateRoute authenticated={authenticated} authUser={authUser} />
         </div>
-        <AppBar position="static">
+        <AppBar position="static" style={{ backgroundColor: '#FFA500' }}>
           <Toolbar>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              <Link component={Link} to="/" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }}>TasteOfLoo</Link>
+              <Link component={Link} to="/" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold'}}>TasteOfLoo</Link>
             </Typography>
-            <Button color="inherit" component={Link} to="/FeedPage">Feed</Button>
-            <Button color="inherit" component={Link} to="/Recommendations">Recommendations</Button>
-            <Button color="inherit" component={Link} to="/ProfilePage">Profile</Button>
-            <Button color="inherit" component={Link} to="/CreateAccount">Create Account</Button>
+            <Button color="inherit" style={{ fontSize: '16px' }} component={Link} to="/FeedPage">Feed</Button>
+            <Button color="inherit" style={{ fontSize: '16px' }} component={Link} to="/Recommendations">Recommendations</Button>
+            <Button color="inherit" style={{ fontSize: '16px' }} component={Link} to="/ProfilePage">Profile</Button>
+            <Button color="inherit" style={{ fontSize: '16px' }} component={Link} to="/CreateAccount">Create Account</Button>
             {authUser && (
-              <Button color="inherit" onClick={handleSignOut}>Sign Out</Button>
+              <Button color="inherit" style={{ fontSize: '16px' }} onClick={handleSignOut}>Sign Out</Button>
             )}
           </Toolbar>
         </AppBar>
