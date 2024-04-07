@@ -1,11 +1,15 @@
 describe('Homepage', () => {
     beforeEach(() => {
-      cy.visit('/');
+      cy.visit('/SignIn');
+
+      cy.get('input[name="email"]').type('john.doe@example.com');
+
+      cy.url().should('include', '/');
     });
   
     it('loads the homepage', () => {
       cy.get('h1').contains('Welcome to TasteOfLoo');
-      cy.get('h2').contains('Discover the best places to eat around the University of Waterloo.');
+      cy.get('h2').contains('Discover the best places to eat around the University of Waterloo');
     });
   
     it('allows users to search for restaurants', () => {

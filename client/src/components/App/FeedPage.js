@@ -185,8 +185,9 @@ function FeedPage() {
               displayEmpty
               name="cuisine"
               placeholder="Cuisine"
+              data-testid="cuisine-dropdown"
             >
-              <MenuItem value="">All Cuisines</MenuItem>
+              <MenuItem value="" data-testid="all-cuisines">All Cuisines</MenuItem>
               <MenuItem value="American">American</MenuItem>
               <MenuItem value="Italian">Italian</MenuItem>
               <MenuItem value="Indian">Indian</MenuItem>
@@ -310,11 +311,12 @@ function FeedPage() {
                             label="Add a comment"
                             name={`comment-${review.id}`}
                             size="small"
+                            data-testid={`comment-input-${review.id}`}
                           />
-                          <IconButton type="submit" color="primary" style={{ marginBottom: '-25px' }}>
+                          <IconButton type="submit" color="primary" style={{ marginBottom: '-25px' }} data-testid={`comment-submit-${review.id}`}>
                             <CommentIcon />
                           </IconButton>
-                          <IconButton color="primary" onClick={() => handleLike(review.id)} style={{ marginBottom: '-25px', marginLeft: '200px' }}>
+                          <IconButton color="primary" onClick={() => handleLike(review.id)} style={{ marginBottom: '-25px', marginLeft: '200px' }} data-testid={`like-review-${review.id}`}>
                             <ThumbUpAltIcon />
                           </IconButton>
                           <Typography variant="body1">{likeCounts[review.id]}</Typography>
