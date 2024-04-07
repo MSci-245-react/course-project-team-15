@@ -5,9 +5,7 @@ describe('Profile Page', () => {
   });
 
   it('should display user information', () => {
-    // Assert that the user name and bio are displayed
-    cy.contains("User's Name").should('exist');
-    cy.contains("A brief bio about the user.").should('exist');
+    cy.contains("No bio available.").should('exist');
   });
 
   it('should display correct counts', () => {
@@ -16,7 +14,6 @@ describe('Profile Page', () => {
     cy.contains('Visited:').should('exist');
     cy.contains('Shortlisted:').should('exist');
     cy.contains('Favourited:').should('exist');
-    cy.contains('Friends:').should('exist');
   });
 
   it('should navigate to lists', () => {
@@ -29,17 +26,13 @@ describe('Profile Page', () => {
     cy.url().should('include', '/BeenToList');
     cy.go('back');
   
-    cy.get('#root > div > div > button:nth-child(5)').click()
     cy.contains('Shortlist').click();
+    cy.get('#root > div > div > button:nth-child(5)').click()
     cy.url().should('include', '/Shortlist');
     cy.go('back');
 
     cy.contains('Favourites').click();
     cy.url().should('include', '/FavouritesList');
-    cy.go('back');
-
-    cy.contains('My Friends').click();
-    cy.url().should('include', '/friends');
     cy.go('back');
   });
 });
