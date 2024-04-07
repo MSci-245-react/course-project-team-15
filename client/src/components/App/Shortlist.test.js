@@ -28,7 +28,7 @@ describe('Shortlist component', () => {
         <Shortlist />
       </Router>
     );
-    await waitFor(() => {expect(screen.getByText('Shortlist')).toBeInTheDocument();});
+    await waitFor(() => {expect(screen.getByText('Places I Wish To Go')).toBeInTheDocument();});
   });
 
   it('renders Shortlist component with one restaurant', async () => {
