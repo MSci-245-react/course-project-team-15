@@ -5,8 +5,8 @@ import { getAuth } from 'firebase/auth';
 import profilePicDefault from './../../assets/images/default-profile-pic.png';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-function ProfilePage() {
-  const [userName, setUserName] = useState("");
+function ProfilePage({ testInitialState }) {
+  const [userName, setUserName] = useState(testInitialState?.userName || "");
   const [bio, setBio] = useState("");
   const [displayBio, setDisplayBio] = useState("");
   const [isEditingBio, setIsEditingBio] = useState(false); 

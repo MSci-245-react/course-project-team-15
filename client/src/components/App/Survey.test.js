@@ -1,6 +1,17 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Survey from './Survey';
+import { getAuth } from 'firebase/auth';
+
+jest.mock('firebase/auth', () => {
+  return {
+    getAuth: jest.fn(() => ({
+      currentUser: {
+        uid: 'znGHn6ow4chnQDJSeHaqgywKAyw1'
+      }
+    }))
+  };
+});
 
 describe('Survey Component', () => {
   test('calls submit when submit button is clicked', async () => {
