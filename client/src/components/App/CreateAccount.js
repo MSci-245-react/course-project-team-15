@@ -315,6 +315,6 @@ function CreateAccount() {
   );
 }
 
-const existingUsernames = ['test', 'Mason'];
+
 
 export default CreateAccount;
