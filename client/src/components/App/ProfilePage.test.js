@@ -51,39 +51,6 @@ describe('ProfilePage Component', () => {
     );
     expect(screen.getByText("No bio available.")).toBeInTheDocument();
   });
-
-
-  // test('renders user statistics correctly', () => {
-  //   render(
-  //   <Router>
-  //     <ProfilePage />
-  //   </Router>);
-
-  //   expect(screen.getByText('Reviews:')).toBeInTheDocument();
-  //   expect(screen.getByText('Visited:')).toBeInTheDocument();
-  //   expect(screen.getByText('Shortlisted:')).toBeInTheDocument();
-  //   expect(screen.getByText('Favourited:')).toBeInTheDocument();
-  // });
-
-  // test('navigates to different lists correctly', async () => {
-  //   render(
-  //     <Router>
-  //       <ProfilePage/>
-  //       </Router>
-  //     );
-
-  //   fireEvent.click(screen.getByText('My Reviews'));
-  //   expect(mockNavigate).toHaveBeenCalledWith('/ReviewsList');
-
-  //   fireEvent.click(screen.getByText('Been'));
-  //   expect(mockNavigate).toHaveBeenCalledWith('/BeenToList');
-
-  //   fireEvent.click(screen.getByText('Shortlist'));
-  //   expect(mockNavigate).toHaveBeenCalledWith('/Shortlist');
-
-  //   fireEvent.click(screen.getByText('Favourites'));
-  //   expect(mockNavigate).toHaveBeenCalledWith('/FavouritesList');
-  // });
   afterAll(() => {
     global.fetch.mockRestore();
   });

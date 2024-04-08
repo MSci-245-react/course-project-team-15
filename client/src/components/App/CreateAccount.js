@@ -115,7 +115,7 @@ function CreateAccount() {
   };
 
   const callApiRegisterUser = async (userDetails) => {
-    const url = "/api/register"; // Adjust the URL path according to your API endpoint
+    const url = "/api/register";
     console.log("Registering user at URL:", url);
     console.log("Sending userDetails to backend:", userDetails);
     
@@ -170,7 +170,7 @@ function CreateAccount() {
       const user = userCredential.user;
       console.log('Successfully created Firebase account:', user.uid);
   
-      // Now, call your backend API to insert the user details into the MySQL database
+      // Call backend API to insert the user details into the MySQL database
       await callApiRegisterUser({
         username,
         email,

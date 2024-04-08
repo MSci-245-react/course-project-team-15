@@ -88,7 +88,7 @@ function App() {
     const handleSignOut = () => {
       firebase.auth.signOut().then(() => {
         console.log('Signed out successfully');
-        // Optionally, redirect the user or perform other actions post sign-out
+        // Redirect the user or perform other actions post sign-out
       }).catch((error) => {
         console.error('Sign out error:', error);
       });

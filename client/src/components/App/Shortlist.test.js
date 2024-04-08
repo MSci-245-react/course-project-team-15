@@ -17,7 +17,7 @@ describe('Shortlist component', () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         ok: true,
-        json: () => Promise.resolve([]), // Assuming an initial empty response
+        json: () => Promise.resolve([]),
       })
     );
   });

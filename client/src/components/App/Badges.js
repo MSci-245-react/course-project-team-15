@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@mui/material';
-import LocalPoliceIcon from '@mui/icons-material/LocalPolice'; // Import the LocalPolice icon from MUI
-import { useLocation } from 'react-router-dom'; // Import useLocation hook
+import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
+import { useLocation } from 'react-router-dom';
 
 // Define a new mapping of badge levels to LocalPoliceIcon with different colors
 const badgeIcons = {
