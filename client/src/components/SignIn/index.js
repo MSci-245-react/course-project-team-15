@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Typography from "@mui/material/Typography";
 import { withFirebase } from '../Firebase';
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from './background5.jpg'; // Import your background image
+import backgroundImage from './background5.jpg'; 
 
 const SignIn = ({ firebase }) => {
   const [email, setEmail] = useState('');
@@ -33,7 +33,7 @@ const SignIn = ({ firebase }) => {
   };
 
   const onNavigateToCreateAccount = () => {
-    navigate('/CreateAccount'); // Assuming your route to create account is '/signup'
+    navigate('/CreateAccount'); 
   };
 
   return (
