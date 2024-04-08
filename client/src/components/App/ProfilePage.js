@@ -183,6 +183,9 @@ function ProfilePage({ testInitialState }) {
       {/* <Button onClick={() => navigate('/friends')}>My Friends</Button> */}
       {/* <Button onClick={() => navigate('/Expenses')}>My Expenses</Button> */}
       <Button onClick={() => navigate('/Badges?userId=1')}>My Badges</Button>
+      <Button onClick={() => navigate('/Feedback')}>Feedback</Button>
+      <Button onClick={() => navigate('/ReportBug')}>Report a Bug</Button>
+      <Button onClick={() => navigate('/ReportRestaurant')}>Report a Restaurant</Button>
       {/* <Button onClick={() => navigate('/Follow')}>Follow People</Button> */}
 
       <Paper elevation={3} sx={{ mt: 2, p: 2 }}>

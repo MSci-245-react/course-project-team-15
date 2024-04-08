@@ -18,6 +18,9 @@ import Map from './Map';
 import Expenses from './Expenses';
 import Badges from './Badges';
 import Follow from './Follow';
+import Feedback from './Feedback';
+import ReportBug from './ReportBug';
+import ReportRestaurant from './ReportRestaurant';
 
 import CreateAccount from './CreateAccount';
 
@@ -131,6 +134,9 @@ function App() {
             <Route path="/Badges" element={<Badges />} />
             <Route path="/Follow" element={<Follow />} />
             <Route path="/CreateAccount" element={<CreateAccount />} />
+            <Route path="/Feedback" element={<Feedback />} />
+            <Route path="/ReportBug" element={<ReportBug />} />
+            <Route path="/ReportRestaurant" element={<ReportRestaurant />} />
           </Routes>
         </Container>
       </Router>
