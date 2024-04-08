@@ -82,7 +82,12 @@ function ProfilePage({ testInitialState }) {
     const beenToRestaurants = JSON.parse(localStorage.getItem('beenToRestaurants') || '[]');
     const shortlistedRestaurants = JSON.parse(localStorage.getItem('shortlistedRestaurants') || '[]');
     const favouriteRestaurants = JSON.parse(localStorage.getItem('favouriteRestaurants') || '[]');
-    
+    const storedBio = localStorage.getItem('profileBio');
+    const storedProfilePic = localStorage.getItem('profilePic') || profilePicDefault;
+
+    setBio(storedBio || '');
+    setDisplayBio(storedBio || '');
+    setProfilePic(storedProfilePic);
     setReviewsCount(reviewsCount.length);
     setVisitedCount(beenToRestaurants.length);
     setShortlistedCount(shortlistedRestaurants.length);
@@ -94,6 +99,7 @@ function ProfilePage({ testInitialState }) {
   };
 
   const handleBioSubmit = () => {
+    localStorage.setItem('profileBio', bio);
     setDisplayBio(bio);
     setIsEditingBio(false);
   };
@@ -104,8 +110,12 @@ function ProfilePage({ testInitialState }) {
 
   const handleImageChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const imageURL = URL.createObjectURL(event.target.files[0]);
-      setProfilePic(imageURL);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePic(e.target.result);
+        localStorage.setItem('profilePic', e.target.result);
+      };
+      reader.readAsDataURL(event.target.files[0]);
     }
   };
 
